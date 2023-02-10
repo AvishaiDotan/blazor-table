@@ -1,0 +1,26 @@
+﻿<tbody>
+
+    @if (TableBodyData != null)
+    {
+        foreach (var row in TableBodyData)
+        {
+            <tr>
+                @foreach (var cell in row)
+                {
+                    <td>
+                        <CellData cellData="@cell"/>
+                        <div class=""></div>
+                    </td>
+
+                }
+            </tr>
+        }
+
+    }
+
+</tbody>
+
+@code {
+    [Parameter]
+    public List<List<object>> TableBodyData { get; set; } = new List<List<object>>();
+}

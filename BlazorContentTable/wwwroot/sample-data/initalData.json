@@ -1,0 +1,10 @@
+{
+  "tableHeader": [ "name", "email", "phone", "address", "status", "notes", "priority" ],
+  "tableBody": [
+    [ "Yehuda Cohen", "yehuda.cohen@gmail.com", "050-2202-483", "123 Main St, Tel Aviv, Israel", "New Lead", "Interested in product X", 3 ],
+    [ "Sarah Levi", "sarah.levi@walla.co.il", "054-555-5556", "456 Market St, Haifa, Israel", "Customer", "", 2 ],
+    [ "Avi Rosen", "avi.rosen@gmail.com", "057-555-5557", "789 Mission Rd, Jerusalem, Israel", "Qualified Lead", "Follow up call next week", 1 ],
+    [ "Shira Zaidman", "shira.zaidman@walla.co.il", "050-555-5558", "246 Market St, Petah Tikva, Israel", "Customer", "Purchased product Y", 2 ],
+    [ "Noa Kadosh", "noa.kadosh@gmail.com", "057-555-5559", "135 Main St, Ramat Gan, Israel", "Potential Lead", "", 3 ]
+  ]
+}

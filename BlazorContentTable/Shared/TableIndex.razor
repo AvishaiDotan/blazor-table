@@ -1,0 +1,64 @@
+﻿@page "/"
+<PageTitle>Index</PageTitle>
+
+@inject HttpClient Http
+
+<h2>Tabley the way to work with Tables</h2>
+
+@if (tableData == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <table>
+        <TableHeader 
+            TableHeaderData="tableData.tableHeader" 
+            IncrementColumn="HandleIncrementColumn" 
+        />
+        <TableBody TableBodyData="tableData.tableBody" />
+    </table>
+
+
+
+
+    @code {
+
+
+    private TableData? tableData;
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        tableData = await Http.GetFromJsonAsync<TableData>("sample-data/initalData.json");
+    }
+
+    public class TableData
+    {
+        public List<string>? tableHeader { get; set; }
+        public List<List<object>>? tableBody { get; set; }
+    }
+
+    public void HandleIncrementColumn(MouseEventArgs e)
+    {
+        if (tableData?.tableHeader == null || tableData?.tableBody == null) return;
+
+        if (e.Button == 0)
+        {
+            tableData.tableHeader.Add("1");
+            foreach (var row in tableData.tableBody)
+            {
+                row.Add("1");
+            }
+        }
+        else if (e.Button == 2)
+        {
+            Console.WriteLine("Modal");
+        }
+
+    }
+    
+}
+}
+
+

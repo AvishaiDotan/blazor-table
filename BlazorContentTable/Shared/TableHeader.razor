@@ -1,0 +1,27 @@
+﻿<h3>TableHeader</h3>
+<thead>
+    <tr>
+        @if (TableHeaderData != null)
+        {
+            @foreach (var header in TableHeaderData)
+            {
+                <th>@header</th>
+            }
+         <th @onmousedown="HandleMouseDown" oncontextmenu="return false;">+</th>
+        }
+    </tr>
+</thead>
+
+@code {
+
+    [Parameter]
+    public List<string> TableHeaderData { get; set; } = new List<string>();
+
+    [Parameter]
+    public EventCallback<MouseEventArgs> IncrementColumn { get; set; }
+
+    private async Task HandleMouseDown(MouseEventArgs e)
+    {
+        await IncrementColumn.InvokeAsync(e);
+    }
+}

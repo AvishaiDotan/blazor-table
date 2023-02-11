@@ -3,11 +3,11 @@
     <tr>
         @if (TableHeaderData != null)
         {
-            @foreach (var header in TableHeaderData)
+            @foreach (var header in TableHeaderData.Select((txt, idx) => new { txt, idx }))
             {
-                <th>@header</th>
+                <th @onmousedown="(ev) => HandleMouseDown(ev, header.idx)" oncontextmenu="return false;">@header.txt</th>
             }
-         <th @onmousedown="HandleMouseDown" oncontextmenu="return false;">+</th>
+            <th @onmousedown="(ev) => HandleMouseDown(ev, -1)" oncontextmenu=" return false;">+</th>
         }
     </tr>
 </thead>
@@ -20,8 +20,9 @@
     [Parameter]
     public EventCallback<MouseEventArgs> IncrementColumn { get; set; }
 
-    private async Task HandleMouseDown(MouseEventArgs e)
+    private async Task HandleMouseDown(MouseEventArgs eventArgs, int idx)
     {
-        await IncrementColumn.InvokeAsync(e);
+
+        await IncrementColumn.InvokeAsync(eventArgs);
     }
 }

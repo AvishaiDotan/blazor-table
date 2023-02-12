@@ -1,46 +1,46 @@
-﻿//{
-//  "tableHeader": [
-//    {
-//      "type": "text",
-//      "value": "Username"
-//    },
-//    {
-//      "type": "checkbox",
-//      "value": "Signed"
-//    },
-//    {
-//      "type": "date",
-//      "value": "Created"
-//    },
-//    {
-//      "type": "number",
-//      "value": "Age"
-//    }
-//  ],
-//  "tableBody": [
-//    {
-//      "id": 1,
-//      "Username": "Avi Cohen",
-//      "Signed": true,
-//      "Created": 1626260000000,
-//      "Age": 0
-//    },
-//    {
-//      "id": 2,
-//      "Username": "Sarah Levi",
-//      "Signed": false,
-//      "Created": 1624882000000,
-//      "Age": 28
-//    },
-//    {
-//      "id": 3,
-//      "Username": "David Mizrachi",
-//      "Signed": true,
-//      "Created": 1625544500000,
-//      "Age": 40
-//    }
-//  ]
-//}
+﻿{
+  "tableHeader": [
+    {
+      "type": "text",
+      "value": "Username"
+    },
+    {
+      "type": "checkbox",
+      "value": "Signed"
+    },
+    {
+      "type": "date",
+      "value": "Created"
+    },
+    {
+      "type": "number",
+      "value": "Age"
+    }
+  ],
+  "tableBody": [
+    {
+      "id": 1,
+      "Username": "Avi Cohen",
+      "Signed": true,
+      "Created": 1626260000000,
+      "Age": 0
+    },
+    {
+      "id": 2,
+      "Username": "Sarah Levi",
+      "Signed": false,
+      "Created": 1624882000000,
+      "Age": 28
+    },
+    {
+      "id": 3,
+      "Username": "David Mizrachi",
+      "Signed": true,
+      "Created": 1625544500000,
+      "Age": 40
+    }
+  ]
+}
 
 
 //{

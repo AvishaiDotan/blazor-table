@@ -4,3 +4,7 @@
     justify-content: $justify;
     align-items: $align-items;
 }
+
+@mixin cell-indent () {
+    padding-inline-start: 10px;
+}

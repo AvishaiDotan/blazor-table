@@ -3,22 +3,26 @@
 
 @inject HttpClient Http
 
-<h2>Tabley the way to work with Tables</h2>
-
 @if (tableData == null)
 {
     <p><em>Loading...</em></p>
 }
 else
 {
-    <table>
-        @if (tableData != null)
-        {
-            <TableHeader TableHeaderData="tableData.tableHeader"
-                 IncrementColumn="HandleIncrementColumn" />
-            <TableBody TableBodyData="tableData.tableBody" />
-        }
-    </table>
+    <section class="table-wrapper">
+        <table class="full">
+            @if (tableData != null)
+            {
+                <TableHeader TableHeaderData="tableData.tableHeader"
+                     IncrementColumn="HandleIncrementColumn" />
+                <TableBody TableBodyData="tableData.tableContent"/>
+            }
+        </table>
+        <div class="height-filler">
+
+        </div>
+    </section>
+   
 
 
 
@@ -34,52 +38,23 @@ else
         //Console.WriteLine(JsonConvert.SerializeObject(tableData, Formatting.Indented));
     }
 
-    public class TableData
-    {
-        public List<string> tableHeader { get; set; }
-        public List<List<object>> tableBody { get; set; }
-    }
-
-
-    //public class TableData
-    //{
-    //    public List<TableHeader> tableHeader { get; set; }
-    //    public List<TableBody> tableBody { get; set; }
-    //}
-
-    //public class TableBody
-    //{
-    //    public int id { get; set; }
-    //    public string Username { get; set; }
-    //    public bool Signed { get; set; }
-    //    public object Created { get; set; }
-    //    public int Age { get; set; }
-    //}
-
-    //public class TableHeader
-    //{
-    //    public string type { get; set; }
-    //    public string value { get; set; }
-    //}
-
-
 
     public void HandleIncrementColumn(MouseEventArgs e)
     {
-        if (tableData?.tableHeader == null || tableData?.tableBody == null) return;
+        //if (tableData?.tableHeader == null || tableData?.tableBody == null) return;
 
-        if (e.Button == 0)
-        {
-            tableData.tableHeader.Add("1");
-            foreach (var row in tableData.tableBody)
-            {
-                row.Add("1");
-            }
-        }
-        else if (e.Button == 2)
-        {
-            Console.WriteLine("Modal");
-        }
+        //if (e.Button == 0)
+        //{
+        //    tableData.tableHeader.Add("1");
+        //    foreach (var row in tableData.tableBody)
+        //    {
+        //        row.Add("1");
+        //    }
+        //}
+        //else if (e.Button == 2)
+        //{
+        //    Console.WriteLine("Modal");
+        //}
 
     }
 

@@ -1,0 +1,16 @@
+﻿@import '../setup/mixin.scss';
+@import '../setup/variables.scss';
+.table-wrapper {
+    @include flexbox(column, flex-start, center);
+    height: calc(100vh - 136px);
+
+    table {
+        width: 80%;
+    }
+
+    .height-filler {
+        width: 100%;
+        height: 100%;
+        background-color: $clr0;
+    }
+}

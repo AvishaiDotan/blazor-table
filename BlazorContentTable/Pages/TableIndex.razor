@@ -15,12 +15,13 @@ else
             {
                 <TableHeader TableHeaderData="tableData.tableHeader"
                      IncrementColumn="HandleIncrementColumn" />
-                <TableBody TableBodyData="tableData.tableContent"/>
+                <TableBody TableBodyData="tableData.tableBody" headers="GetHeader()" />
             }
         </table>
         <div class="height-filler">
 
         </div>
+        <button @onclick="() => Console.WriteLine(JsonConvert.SerializeObject(tableData.tableBody, Formatting.Indented))">312#!#Print</button>
     </section>
    
 
@@ -29,13 +30,24 @@ else
 
     @code {
 
-    private TableData tableData;
+    static TableData tableData;
 
 
     protected override async Task OnInitializedAsync()
     {
         tableData = await Http.GetFromJsonAsync<TableData>("sample-data/initalData.json");
         //Console.WriteLine(JsonConvert.SerializeObject(tableData, Formatting.Indented));
+    }
+
+    public List<string> GetHeader()
+    {
+        List<string> result = new List<string>();
+
+        foreach (TableHeaderClass header in tableData.tableHeader)
+        {
+            result.Add(header.value);
+        }
+        return result;
     }
 
 

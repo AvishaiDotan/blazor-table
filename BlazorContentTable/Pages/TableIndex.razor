@@ -12,11 +12,12 @@
 else
 {
     <table>
-        <TableHeader 
-            TableHeaderData="tableData.tableHeader" 
-            IncrementColumn="HandleIncrementColumn" 
-        />
-        <TableBody TableBodyData="tableData.tableBody" />
+        @if (tableData != null)
+        {
+            <TableHeader TableHeaderData="tableData.tableHeader"
+                 IncrementColumn="HandleIncrementColumn" />
+            <TableBody TableBodyData="tableData.tableBody" />
+        }
     </table>
 
 
@@ -24,20 +25,44 @@ else
 
     @code {
 
-
-    private TableData? tableData;
+    private TableData tableData;
 
 
     protected override async Task OnInitializedAsync()
     {
         tableData = await Http.GetFromJsonAsync<TableData>("sample-data/initalData.json");
+        //Console.WriteLine(JsonConvert.SerializeObject(tableData, Formatting.Indented));
     }
 
     public class TableData
     {
-        public List<string>? tableHeader { get; set; }
-        public List<List<object>>? tableBody { get; set; }
+        public List<string> tableHeader { get; set; }
+        public List<List<object>> tableBody { get; set; }
     }
+
+
+    //public class TableData
+    //{
+    //    public List<TableHeader> tableHeader { get; set; }
+    //    public List<TableBody> tableBody { get; set; }
+    //}
+
+    //public class TableBody
+    //{
+    //    public int id { get; set; }
+    //    public string Username { get; set; }
+    //    public bool Signed { get; set; }
+    //    public object Created { get; set; }
+    //    public int Age { get; set; }
+    //}
+
+    //public class TableHeader
+    //{
+    //    public string type { get; set; }
+    //    public string value { get; set; }
+    //}
+
+
 
     public void HandleIncrementColumn(MouseEventArgs e)
     {
@@ -57,7 +82,7 @@ else
         }
 
     }
-    
+
 }
 }
 

@@ -1,4 +1,5 @@
 ﻿<h3>TableHeader</h3>
+
 <thead>
     <tr>
         @if (TableHeaderData != null)
@@ -14,8 +15,10 @@
 
 @code {
 
+
+
     [Parameter]
-    public List<string> TableHeaderData { get; set; } = new List<string>();
+    public List<string> TableHeaderData { get; set; }
 
     [Parameter]
     public EventCallback<MouseEventArgs> IncrementColumn { get; set; }

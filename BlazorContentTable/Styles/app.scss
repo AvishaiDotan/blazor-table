@@ -1,6 +1,11 @@
 ﻿@import 'setup/reset.scss';
 @import 'setup/variables.scss';
 @import 'setup/layout.scss';
+@import 'setup/mixin.scss';
+@import 'setup/functions.scss';
+@import 'basics/body.scss';
+
 /*CMPS*/
 @import 'cmps/AppHeader.scss';
+@import 'cmps/TableActionsHeader.scss';
 

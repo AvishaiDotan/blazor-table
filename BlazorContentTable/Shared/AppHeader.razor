@@ -1,4 +1,4 @@
-﻿<header>
+﻿<header class="main-header full">
     <section class="left-wrapper">
         <div class="logo">
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-rocket-takeoff" viewBox="0 0 16 16">
@@ -9,7 +9,7 @@
             <h1>BlazorTable</h1>
         </div>
         <nav>
-            <span>Data</span>
+            <span class="selected">Data</span>
             <span>About</span>
         </nav>
     </section>
@@ -23,6 +23,11 @@
         </svg>
     </section>
 </header>
+<header class="secondary-header full">
+    <span>Actions</span>
+</header>
+<TableActionsHeader/>
+
 
 @code {
 

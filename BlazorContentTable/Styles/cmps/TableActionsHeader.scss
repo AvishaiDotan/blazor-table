@@ -1,0 +1,26 @@
+﻿@import '../setup/variables.scss';
+@import '../setup/mixin.scss';
+
+.table-actions-header {
+    @include flexbox(row, flex-start, center);
+    gap: 20px;
+    height: 44px;
+    background-color: $clr2;
+    color: $clr-1;
+    box-shadow: 0px -3px 2px #0c589188;
+
+    span {
+        @include flexbox();
+        gap: 5px;
+        padding-block: 5px;
+        padding-inline: 9px;
+        transition: .4s background-color;
+        border-radius: 5px;
+
+
+        &:hover {
+            background-color: #f0f0f0;
+            cursor: pointer;
+        }
+    }
+}

@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>net7.0</TargetFramework>
-    <Nullable>enable</Nullable>
+    <Nullable>disable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
 
@@ -13,9 +13,8 @@
     <PackageReference Include="Newtonsoft.Json" Version="13.0.2" />
   </ItemGroup>
 
-
-  <ItemGroup>
-    <Folder Include="Styles\basics\" />
+<ItemGroup>
+    <Folder Include="wwwroot\css\cmps\" />
   </ItemGroup>
 
 	<ItemGroup>
@@ -26,8 +25,5 @@
     <Message Text="Compiling global SCSS files" Importance="high" />
     <Exec Command="npm run sass -- --style=compressed Styles:wwwroot/css" />
   </Target>
-
-
-
 
 </Project>

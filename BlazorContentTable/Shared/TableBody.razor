@@ -1,17 +1,18 @@
 ﻿<tbody>
-    @for (int i = 0; i < TableBodyData.Count; i++)
+    @for (int idx = 0; idx < TableBodyData.Count; idx++)
     {
-        var row = TableBodyData[i];
+        var row = TableBodyData[idx];
         <tr>
             @foreach (var header in headers)
             {
                 @if (row.ContainsKey(header))
                 {
-                    var cellInfo = new { rowIdx = i, header };
                     <TableCell 
-                        innerText="@row[header]" 
-                        cellInfo="cellInfo"
-                        handleTableBodyModalChanges="(cellInfo) => handleTableBodyModalChanges.Invoke(cellInfo)" />
+                        innerText="@row[header]"
+                        cellIdx="idx"
+                        cellHeader="@header"
+                        handleTableBodyModalChanges="(idx, header) => handleTableBodyModalChanges.Invoke(idx, header)"
+                        isModalOpen="isOpen(idx, header)" />
                 }
                 else
                 {
@@ -42,6 +43,8 @@
 </tbody>
 
 @code {
+    public (int rowIdx, string header) cellInfo { get; set; }
+
     [Parameter]
     public List<Dictionary<string, dynamic>> TableBodyData { get; set; }
 
@@ -49,5 +52,18 @@
     public List<string> headers { get; set; }
 
     [Parameter]
-    public Action<object> handleTableBodyModalChanges { get; set; }
+    public (int idx, string header) openedTableBodyCell { get; set; }
+
+    [Parameter]
+    public Action<int, string> handleTableBodyModalChanges { get; set; }
+
+    public bool isOpen(int idx, string header)
+    {
+        Console.WriteLine("openedIdx:" + openedTableBodyCell.idx.ToString());
+        Console.WriteLine("idx:" + idx.ToString());
+        Console.WriteLine("openedTableBodyCell.header" + openedTableBodyCell.header);
+        Console.WriteLine("header" + header);
+        Console.WriteLine((openedTableBodyCell.idx == idx && openedTableBodyCell.header == header).ToString());
+        return (openedTableBodyCell.idx == idx && openedTableBodyCell.header == header);
+    }
 }

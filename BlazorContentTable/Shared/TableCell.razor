@@ -1,4 +1,7 @@
-﻿<td @onmousedown="handleMouseDown" oncontextmenu="return false;">
+﻿<td 
+    @onmousedown="handleMouseDown" 
+    oncontextmenu="return false;"
+    class="@($"{(isModalOpen ? "stick-top" : "")} {(isModalOpen ? "open" : "")} table-cell")">
     @innerText
 </td>
 
@@ -8,15 +11,21 @@
     public object innerText { get; set; }
 
     [Parameter]
-    public object cellInfo {get; set;}
+    public int cellIdx { get; set; }
 
     [Parameter]
-    public Action<object> handleTableBodyModalChanges { get; set; }
+    public string cellHeader { get; set; }
+
+    [Parameter]
+    public Action<int, string> handleTableBodyModalChanges { get; set; }
+
+    [Parameter]
+    public bool isModalOpen { get; set; }
 
     public void handleMouseDown(MouseEventArgs e)
     {
         if (e.Button != 2) return;
 
-        handleTableBodyModalChanges.Invoke(cellInfo);
+        handleTableBodyModalChanges.Invoke(cellIdx, cellHeader);
     }
 }

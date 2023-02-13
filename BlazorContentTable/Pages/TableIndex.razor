@@ -20,7 +20,11 @@ else
                         handleModalChanges="(idx, modalType, state) => handleModalChanges(idx, modalType, state)" 
                         addNewColumn="(idx, type) => addNewColumn(idx, type)" 
                     />
-                    <TableBody TableBodyData="tableData.tableBody" headers="GetHeaders()" handleTableBodyModalChanges="(selectedCell) => handleTableBodyModalChanges(selectedCell)" />
+                    <TableBody 
+                        TableBodyData="tableData.tableBody" 
+                        headers="GetHeaders()" 
+                        handleTableBodyModalChanges="(idx, header) => handleTableBodyModalChanges(idx, header)"
+                       openedTableBodyCell="selectedCell" />
                 }
             </table>
             <div class="height-filler">
@@ -34,7 +38,10 @@ else
     @code {
 
     static TableData tableData;
-    public int selectedIdx = -1;
+    //public int selectedIdx = -1;
+    private (int idx, string header) selectedCell;
+
+
 
 
 
@@ -64,9 +71,14 @@ else
         StateHasChanged();
     }
 
-    public void handleTableBodyModalChanges(object cellInfo)
+    public void handleTableBodyModalChanges(int rowIdx, string header)
     {
-        Console.WriteLine(System.Text.Json.JsonSerializer.Serialize(cellInfo));
+        selectedCell.header = header;
+        selectedCell.idx = rowIdx;
+
+        Console.WriteLine(System.Text.Json.JsonSerializer.Serialize(selectedCell.header));
+        Console.WriteLine(System.Text.Json.JsonSerializer.Serialize(selectedCell.idx));
+        StateHasChanged();
     }
 
     public void closeAllModals(bool doUpdate)
@@ -86,7 +98,7 @@ else
     {
         closeAllModals(true);
 
-        selectedIdx = idx;
+        //selectedIdx = idx;
 
         Random rand = new Random();
         int randomNumber = rand.Next();

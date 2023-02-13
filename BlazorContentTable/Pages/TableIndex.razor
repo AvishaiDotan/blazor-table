@@ -20,7 +20,7 @@ else
                         handleModalChanges="(idx, modalType, state) => handleModalChanges(idx, modalType, state)" 
                         addNewColumn="(idx, type) => addNewColumn(idx, type)" 
                     />
-                    <TableBody TableBodyData="tableData.tableBody" headers="GetHeaders()" />
+                    <TableBody TableBodyData="tableData.tableBody" headers="GetHeaders()" handleTableBodyModalChanges="(selectedCell) => handleTableBodyModalChanges(selectedCell)" />
                 }
             </table>
             <div class="height-filler">
@@ -64,12 +64,16 @@ else
         StateHasChanged();
     }
 
+    public void handleTableBodyModalChanges(object cellInfo)
+    {
+        Console.WriteLine(System.Text.Json.JsonSerializer.Serialize(cellInfo));
+    }
+
     public void closeAllModals(bool doUpdate)
     {
         foreach (var header in tableData.tableHeader)
         {
             header.isDirectionModalOpen = false;
-            header.isTypeModalOpen = false;
         }
 
         if (doUpdate)
@@ -91,7 +95,6 @@ else
         TableHeaderClass newHeader = new TableHeaderClass();
         newHeader.type = type;
         newHeader.value = propName;
-        newHeader.isTypeModalOpen = true;
         tableData.tableHeader.Insert(idx, newHeader);
 
         foreach (var item in tableData.tableBody)

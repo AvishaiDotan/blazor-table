@@ -1,0 +1,22 @@
+﻿<td @onmousedown="handleMouseDown" oncontextmenu="return false;">
+    @innerText
+</td>
+
+
+@code {
+    [Parameter]
+    public object innerText { get; set; }
+
+    [Parameter]
+    public object cellInfo {get; set;}
+
+    [Parameter]
+    public Action<object> handleTableBodyModalChanges { get; set; }
+
+    public void handleMouseDown(MouseEventArgs e)
+    {
+        if (e.Button != 2) return;
+
+        handleTableBodyModalChanges.Invoke(cellInfo);
+    }
+}

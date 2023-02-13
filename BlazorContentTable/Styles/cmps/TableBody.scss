@@ -10,23 +10,34 @@ tbody {
     }
 
 
-    tr {
+    tr:not(:last-child) {
         td {
             padding-block: 5px;
             @include cell-indent();
             border-inline: 1px solid #dde1e3;
+            transition: 0.2s all;
+
+            &:hover {
+                cursor: pointer;
+                background-color: #1283da4a;
+            }
         }
     }
 
     tr:last-child {
         td {
             border: none;
+            transition: 0.2s all;
+
+            &:first-child:hover {
+                cursor: pointer;
+                background-color: #1283da4a;
+            }
         }
 
         td:first-child {
             text-align: center;
             border-inline: 1px solid #dde1e3;
-
         }
     }
 }

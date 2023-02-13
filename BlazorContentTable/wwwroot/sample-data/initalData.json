@@ -3,26 +3,22 @@
     {
       "type": "text",
       "value": "Username",
-      "isDirectionModalOpen": false,
-      "isTypeModalOpen": false
+      "isDirectionModalOpen": false
     },
     {
       "type": "checkbox",
       "value": "Signed",
-      "isDirectionModalOpen": false,
-      "isTypeModalOpen": false
+      "isDirectionModalOpen": false
     },
     {
       "type": "date",
       "value": "Created",
-      "isDirectionModalOpen": false,
-      "isTypeModalOpen": false
+      "isDirectionModalOpen": false
     },
     {
       "type": "number",
       "value": "Age",
-      "isDirectionModalOpen": false,
-      "isTypeModalOpen": false
+      "isDirectionModalOpen": false
     }
   ],
   "tableBody": [

@@ -1,4 +1,5 @@
 ﻿@import '../setup/variables.scss';
+@import '../setup/mixin.scss';
 
 .header-cell {
     position: relative;
@@ -49,6 +50,8 @@
         > span {
             padding-inline: 10px;
             transition: .4s background-color;
+            @include flexbox(row, flex-start, center);
+            gap: 5px;
 
             &:hover {
                 background-color: #1283da4a;

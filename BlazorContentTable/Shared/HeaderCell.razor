@@ -19,15 +19,31 @@
     </div>
     @if (headerData.isDirectionModalOpen)
     {
-        <section class="cell-modal" style="top: @topPos; left: @leftPos">
-            <span @onclick="() => addColumn(idx - 1)" @onclick:stopPropagation="true" @onclick:preventDefault="true">Add Left Column</span>
-            <span @onclick="() => addColumn(idx + 1)" @onclick:stopPropagation="true" @onclick:preventDefault="true">Add Right Column</span>
+        <section class="modals-section">
+            <section class="cell-modal" style="top: @topPos; left: @leftPos">
+                <span @onclick="() => addColumn(idx - 1)" @onclick:stopPropagation="true" @onclick:preventDefault="true">Add Left Column</span>
+                <span 
+                    @onmouseenter='() => isStickTop = false'
+                    @onmouseleave='() => isStickTop = true'
+                    @onclick="() => addColumn(idx + 1)" 
+                    @onclick:stopPropagation="true" 
+                    @onclick:preventDefault="true">
+                    Add Right Column
+                </span>
+            </section>
+            <section class="@($"{(isStickTop ? "stick-top" : "stick-bottom")} cell-modal")">
+                <span @onclick='() => handleTypeSelect("text")'>Text</span>
+                <span @onclick='() => handleTypeSelect("checkbox")'>Checkbox</span>
+                <span @onclick='() => handleTypeSelect("date")'>Date</span>
+                <span @onclick='() => handleTypeSelect("number")'>Number</span>
+            </section>
         </section>
+
     }
     @if (headerData.isTypeModalOpen)
     {
-        <section class="cell-modal" style="top: @topPos; left: @leftPos">
-            <span @onclick='() => handleTypeSelect("text")' >Text</span>
+        <section class="cell-modal" >
+            <span @onclick='() => handleTypeSelect("text")'>Text</span>
             <span @onclick='() => handleTypeSelect("checkbox")'>Checkbox</span>
             <span @onclick='() => handleTypeSelect("date")'>Date</span>
             <span @onclick='() => handleTypeSelect("number")'>Number</span>
@@ -40,6 +56,8 @@
 @code {
     string topPos = "0px";
     string leftPos = "0px";
+
+    private bool isStickTop { get; set; } = false;
 
 
     [Parameter]
@@ -61,8 +79,8 @@
     {
         if (e.Button != 2) return;
 
-        topPos = e.OffsetY.ToString() + "px";
-        leftPos = e.OffsetX.ToString() + "px";
+        topPos = (e.OffsetY - 5).ToString() + "px";
+        leftPos = (e.OffsetY - 5).ToString() + "px";
         handleModalChanges.Invoke(idx, "isDirectionModalOpen", true);
     }
 
@@ -75,6 +93,11 @@
     public void handleTypeSelect(string type)
     {
         setColumnType.Invoke(type);
+    }
+
+    private string GetStickClass()
+    {
+        return isStickTop ? "stick-top" : "stick-bottom cell-modal";
     }
 
 }

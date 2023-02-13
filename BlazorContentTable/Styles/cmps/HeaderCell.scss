@@ -3,25 +3,49 @@
 .header-cell {
     position: relative;
 
-    .cell-modal {
-        position: absolute;
-        background-color: $clr2;
-        border-radius: 6px;
-        box-shadow: 0px 0px 7px rgb(12 72 116 / 53%);
-        padding: 5px;
+    .modals-section {
         display: flex;
-        flex-direction: column;
-        min-width: 174px;
-        gap: 5px;
-        z-index: 10;
+        justify-content: center;
+        align-items: center;
 
+        .cell-modal {
+            position: absolute;
+            background-color: $clr2;
+            border-radius: 6px;
+            box-shadow: 0px 0px 7px rgb(12 72 116 / 53%);
+            padding: 5px;
+            display: flex;
+            flex-direction: column;
+            min-width: 174px;
+            gap: 5px;
+            z-index: 10;
+            transition: .4s opacity;
 
-        > * {
-            padding-inline: 10px;
-            transition: .4s background-color;
+            > * {
+                padding-inline: 10px;
+                transition: .4s background-color;
 
-            &:hover {
-                background-color: #1283da4a;
+                &:hover {
+                    background-color: #1283da4a;
+                }
+            }
+
+            &:first-child:hover ~ :last-child {
+                opacity: 1;
+            }
+
+            &:last-child {
+                opacity: 0;
+                transform: translate(-4px, 21px);
+                position: static;
+
+                &.stick-bottom {
+                    transform: translate(-4px, 46px);
+                }
+
+                &:hover {
+                    opacity: 1;
+                }
             }
         }
     }

@@ -1,53 +1,47 @@
 ﻿<tbody>
-
-    @foreach (var header in headers)
+    @foreach (var row in TableBodyData)
     {
         <tr>
-            @foreach (var data in TableBodyData)
+            @foreach (var header in headers)
             {
+                @if (row.ContainsKey(header))
+                {
+                    <td>@row[header]</td>
+                }
+                else
+                {
+                    <td>""</td>
+                }
 
             }
         </tr>
     }
-    @*    @if (TableBodyData != null)
-    {
-    foreach (var row in TableBodyData)
-    {
     <tr>
-    @foreach (var cell in row)
-    {
-    <td>
-    <CellData cellData="@cell"/>
-    <div class=""></div>
-    </td>
-
-    }
+        @foreach (var header in headers.Select((item, idx) => new { item, idx }))
+        {
+            @if (header.idx == 0)
+            {
+                <td>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" class="icon" style="shape-rendering: geometricPrecision;">
+                        <path fill-rule="evenodd" fill="currentColor" d="M9,7 L9,3.5 C9,3.224 8.776,3 8.5,3 L7.5,3 C7.224,3 7,3.224 7,3.5 L7,7 L3.5,7 C3.224,7 3,7.224 3,7.5 L3,8.5 C3,8.776 3.224,9 3.5,9 L7,9 L7,12.5 C7,12.776 7.224,13 7.5,13 L8.5,13 C8.776,13 9,12.776 9,12.5 L9,9 L12.5,9 C12.776,9 13,8.776 13,8.5 L13,7.5 C13,7.224 12.776,7 12.5,7 L9,7 Z">
+                        </path>
+                    </svg>
+                </td>
+            }
+            else
+            {
+                <td></td>
+            }
+        }
     </tr>
-    }
-
-    <tr>
-    <td>
-    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" class="icon" style="shape-rendering: geometricPrecision;">
-    <path fill-rule="evenodd" fill="currentColor" d="M9,7 L9,3.5 C9,3.224 8.776,3 8.5,3 L7.5,3 C7.224,3 7,3.224 7,3.5 L7,7 L3.5,7 C3.224,7 3,7.224 3,7.5 L3,8.5 C3,8.776 3.224,9 3.5,9 L7,9 L7,12.5 C7,12.776 7.224,13 7.5,13 L8.5,13 C8.776,13 9,12.776 9,12.5 L9,9 L12.5,9 C12.776,9 13,8.776 13,8.5 L13,7.5 C13,7.224 12.776,7 12.5,7 L9,7 Z">
-    </path>
-    </svg>
-    </td>
-    <td></td>
-    <td></td>
-    <td></td>
-    <td></td>
-    </tr>
-
-    }*@
-
 </tbody>
 
 @code {
-    //[Parameter]
-    //public List<TableContent> TableBodyData { get; set; }
-
     [Parameter]
-    public List<TableBodyClass> TableBodyData { get; set; }
+    public List<Dictionary<string, dynamic>> TableBodyData { get; set; }
+
+    //[Parameter]
+    //public List<TableBodyClass> TableBodyData { get; set; }
 
     [Parameter]
     public List<string> headers { get; set; }

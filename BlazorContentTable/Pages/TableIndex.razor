@@ -9,21 +9,22 @@
 }
 else
 {
-    <section class="table-wrapper">
-        <table class="full">
-            @if (tableData != null)
-            {
-                <TableHeader TableHeaderData="tableData.tableHeader"
-                     IncrementColumn="HandleIncrementColumn" />
-                <TableBody TableBodyData="tableData.tableBody" headers="GetHeader()" />
-            }
-        </table>
-        <div class="height-filler">
-
-        </div>
-        <button @onclick="() => Console.WriteLine(JsonConvert.SerializeObject(tableData.tableBody, Formatting.Indented))">312#!#Print</button>
-    </section>
-   
+    <main @onclick="(e) => handleModalChanges()">
+        <AppHeader />
+        <section class="table-wrapper full">
+            <table class="full">
+                @if (tableData != null)
+                {
+                    <TableHeader TableHeaderData="tableData.tableHeader"
+                         handleModalChanges="(idx, modalType, state) => handleModalChanges(idx, modalType, state)" />
+                    <TableBody TableBodyData="tableData.tableBody" headers="GetHeader()" />
+                }
+            </table>
+            <div class="height-filler">
+            </div>
+            <button @onclick="() => Console.WriteLine(JsonConvert.SerializeObject(tableData.tableBody, Formatting.Indented))">312#!#Print</button>
+        </section>
+    </main>
 
 
 
@@ -36,7 +37,8 @@ else
     protected override async Task OnInitializedAsync()
     {
         tableData = await Http.GetFromJsonAsync<TableData>("sample-data/initalData.json");
-        //Console.WriteLine(JsonConvert.SerializeObject(tableData, Formatting.Indented));
+        Console.WriteLine(JsonConvert.SerializeObject(tableData, Formatting.Indented));
+        Console.WriteLine(System.Text.Json.JsonSerializer.Serialize(tableData));
     }
 
     public List<string> GetHeader()
@@ -51,23 +53,33 @@ else
     }
 
 
-    public void HandleIncrementColumn(MouseEventArgs e)
+    //public void HandleIncrementColumn(MouseEventArgs e)
+    //{
+    //    //if (e.Button == 0)
+    //    //{
+    //    //    tableData.tableHeader.Add("1");
+    //    //    foreach (var row in tableData.tableBody)
+    //    //    {
+    //    //        row.Add("1");
+    //    //    }
+    //    //}
+    //    //else if (e.Button == 2)
+    //    //{
+    //    //    Console.WriteLine("Modal");
+    //    //}
+
+    //}
+
+    public void handleModalChanges(int idx = 0, string modalType = "isDirectionModalOpen", bool state = false)
     {
-        //if (tableData?.tableHeader == null || tableData?.tableBody == null) return;
+        foreach (var header in tableData.tableHeader)
+        {
+            header.GetType().GetProperty(modalType).SetValue(header, false, null);
+        }
 
-        //if (e.Button == 0)
-        //{
-        //    tableData.tableHeader.Add("1");
-        //    foreach (var row in tableData.tableBody)
-        //    {
-        //        row.Add("1");
-        //    }
-        //}
-        //else if (e.Button == 2)
-        //{
-        //    Console.WriteLine("Modal");
-        //}
-
+        tableData.tableHeader[idx].GetType().GetProperty(modalType).SetValue(tableData.tableHeader[idx], state, null);
+        Console.WriteLine(JsonConvert.SerializeObject(tableData.tableHeader, Formatting.Indented));
+        StateHasChanged();
     }
 
 }

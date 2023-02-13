@@ -1,0 +1,28 @@
+﻿@import '../setup/variables.scss';
+
+.header-cell {
+    position: relative;
+
+    .direction-modal {
+        position: absolute;
+        background-color: $clr2;
+        border-radius: 6px;
+        box-shadow: 0px 0px 7px rgb(12 72 116 / 53%);
+        padding: 5px;
+        display: flex;
+        flex-direction: column;
+        min-width: 174px;
+        gap: 5px;
+        z-index: 10;
+
+
+        > * {
+            padding-inline: 10px;
+            transition: .4s background-color;
+
+            &:hover {
+                background-color: #1283da4a;
+            }
+        }
+    }
+}

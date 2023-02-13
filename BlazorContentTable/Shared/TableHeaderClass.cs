@@ -1,4 +1,6 @@
-﻿namespace BlazorContentTable.Shared
+﻿using Newtonsoft.Json.Linq;
+
+namespace BlazorContentTable.Shared
 {
     public class TableHeaderClass
     {

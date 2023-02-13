@@ -19,9 +19,18 @@
     </div>
     @if (headerData.isDirectionModalOpen)
     {
-        <section class="direction-modal" style="top: @topPos; left: @leftPos">
-            <span>Add Left Column</span>
-            <span>Add Right Column</span>
+        <section class="cell-modal" style="top: @topPos; left: @leftPos">
+            <span @onclick="() => addColumn(idx - 1)" @onclick:stopPropagation="true" @onclick:preventDefault="true">Add Left Column</span>
+            <span @onclick="() => addColumn(idx + 1)" @onclick:stopPropagation="true" @onclick:preventDefault="true">Add Right Column</span>
+        </section>
+    }
+    @if (headerData.isTypeModalOpen)
+    {
+        <section class="cell-modal" style="top: @topPos; left: @leftPos">
+            <span @onclick='() => handleTypeSelect("text")' >Text</span>
+            <span @onclick='() => handleTypeSelect("checkbox")'>Checkbox</span>
+            <span @onclick='() => handleTypeSelect("date")'>Date</span>
+            <span @onclick='() => handleTypeSelect("number")'>Number</span>
         </section>
     }
 
@@ -33,52 +42,39 @@
     string leftPos = "0px";
 
 
-
     [Parameter]
     public TableHeaderClass headerData { get; set; }
 
     [Parameter]
     public int idx { get; set; }
 
-    //[Parameter]
-    //public Action<int, string, bool> toggleModal { get; set; }
+    [Parameter]
+    public Action<string> setColumnType { get; set; }
 
     [Parameter]
     public Action<int, string, bool> handleModalChanges { get; set; }
 
     [Parameter]
-    public EventCallback<MouseEventArgs> addColumn { get; set; }
-
-    //public void handleMouseDown(MouseEventArgs e, int idx)
-    //{
-    //    Console.WriteLine(idx);
-    //    Console.WriteLine(JsonConvert.SerializeObject(e, Formatting.Indented));
-    //    if (e.Button == 0)
-    //    {
-    //        toggleModal.Invoke(idx, "isDirectionModalOpen", false);
-    //    }
-    //    else if (e.Button == 2)
-    //    {
-    //        topPos = e.OffsetY.ToString() + "px";
-    //        leftPos = e.OffsetX.ToString() + "px";
-    //        toggleModal.Invoke(idx, "isDirectionModalOpen", true);
-    //    }
-    //}
+    public Action<int> addNewColumn { get; set; }
 
     public void handleMouseDown(MouseEventArgs e, int idx)
     {
-        Console.WriteLine(idx);
-        Console.WriteLine(JsonConvert.SerializeObject(e, Formatting.Indented));
-        if (e.Button == 0)
-        {
-            handleModalChanges.Invoke(idx, "isDirectionModalOpen", false);
-        }
-        else if (e.Button == 2)
-        {
-            topPos = e.OffsetY.ToString() + "px";
-            leftPos = e.OffsetX.ToString() + "px";
-            handleModalChanges.Invoke(idx, "isDirectionModalOpen", true);
-        }
+        if (e.Button != 2) return;
+
+        topPos = e.OffsetY.ToString() + "px";
+        leftPos = e.OffsetX.ToString() + "px";
+        handleModalChanges.Invoke(idx, "isDirectionModalOpen", true);
+    }
+
+    public void addColumn(int newCoulmnIdx)
+    {
+        //handleModalChanges.Invoke(idx, "isDirectionModalOpen", false);
+        addNewColumn.Invoke(newCoulmnIdx);
+    }
+
+    public void handleTypeSelect(string type)
+    {
+        setColumnType.Invoke(type);
     }
 
 }

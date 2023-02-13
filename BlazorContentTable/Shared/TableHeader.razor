@@ -9,9 +9,8 @@
                 <HeaderCell 
                     headerData="@header.item" 
                     idx="@header.idx" 
-                    addNewColumn="(idx) => addNewColumn.Invoke(idx)"
+                    addNewColumn="(idx, type) => addNewColumn.Invoke(idx, type)"
                     handleModalChanges="(idx, modalType, state) => handleModalChanges.Invoke(idx, modalType, state)" 
-                    setColumnType="(type) => setColumnType.Invoke(type)"
                 />
             }
             <th @onmousedown="(ev) => handleCellAction(ev, -1)" oncontextmenu=" return false;">
@@ -33,10 +32,7 @@
     public Action<int, string, bool> handleModalChanges { get; set; }
 
     [Parameter]
-    public Action<int> addNewColumn { get; set; }
-
-    [Parameter]
-    public Action<string> setColumnType { get; set; }
+    public Action<int, string> addNewColumn { get; set; }
 
     public void toggleModalState(int idx, string modalType, bool state)
     {

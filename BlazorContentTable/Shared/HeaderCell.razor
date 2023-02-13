@@ -19,37 +19,32 @@
     </div>
     @if (headerData.isDirectionModalOpen)
     {
-        <section class="modals-section">
-            <section class="cell-modal" style="top: @topPos; left: @leftPos">
-                <span @onclick="() => addColumn(idx - 1)" @onclick:stopPropagation="true" @onclick:preventDefault="true">Add Left Column</span>
-                <span 
-                    @onmouseenter='() => isStickTop = false'
-                    @onmouseleave='() => isStickTop = true'
-                    @onclick="() => addColumn(idx + 1)" 
-                    @onclick:stopPropagation="true" 
-                    @onclick:preventDefault="true">
-                    Add Right Column
-                </span>
-            </section>
-            <section class="@($"{(isStickTop ? "stick-top" : "stick-bottom")} cell-modal")">
-                <span @onclick='() => handleTypeSelect("text")'>Text</span>
-                <span @onclick='() => handleTypeSelect("checkbox")'>Checkbox</span>
-                <span @onclick='() => handleTypeSelect("date")'>Date</span>
-                <span @onclick='() => handleTypeSelect("number")'>Number</span>
+        <section class="cell-modal" style="top: @topPos; left: @leftPos">
+
+            <span 
+                  class="@($"{(isStickTop ? "selected" : "")}")"
+                  @onmouseenter='() => { isStickTop = true; isSideModalOpen = true; }'
+                  @onmouseleave='() => isSideModalOpen = false'
+            >
+                  Add Left Column
+             </span>
+
+            <span class="@($"{(isStickTop ? "" : "selected")}")"
+                  @onmouseenter='() => { isStickTop = false; isSideModalOpen = true; }'
+                  @onmouseleave='() => isSideModalOpen = false'
+            >
+                  Add Right Column
+
+            </span>
+            <section class="@($"{(isStickTop ? "stick-top" : "stick-bottom")} {(isSideModalOpen ? "open" : "closed")} cell-modal side-modal")">
+                <span @onclick='() => addColumn("text")'>Text</span>
+                <span @onclick='() => addColumn("checkbox")'>Checkbox</span>
+                <span @onclick='() => addColumn("date")'>Date</span>
+                <span @onclick='() => addColumn("number")'>Number</span>
             </section>
         </section>
 
     }
-    @if (headerData.isTypeModalOpen)
-    {
-        <section class="cell-modal" >
-            <span @onclick='() => handleTypeSelect("text")'>Text</span>
-            <span @onclick='() => handleTypeSelect("checkbox")'>Checkbox</span>
-            <span @onclick='() => handleTypeSelect("date")'>Date</span>
-            <span @onclick='() => handleTypeSelect("number")'>Number</span>
-        </section>
-    }
-
 
 </th>
 
@@ -58,6 +53,7 @@
     string leftPos = "0px";
 
     private bool isStickTop { get; set; } = false;
+    private bool isSideModalOpen { get; set; } = false;
 
 
     [Parameter]
@@ -67,37 +63,24 @@
     public int idx { get; set; }
 
     [Parameter]
-    public Action<string> setColumnType { get; set; }
-
-    [Parameter]
     public Action<int, string, bool> handleModalChanges { get; set; }
 
     [Parameter]
-    public Action<int> addNewColumn { get; set; }
+    public Action<int, string> addNewColumn { get; set; }
 
     public void handleMouseDown(MouseEventArgs e, int idx)
     {
         if (e.Button != 2) return;
 
-        topPos = (e.OffsetY - 5).ToString() + "px";
-        leftPos = (e.OffsetY - 5).ToString() + "px";
+        topPos = $"{e.OffsetY}px";
+        leftPos = $"{e.OffsetX}px";
         handleModalChanges.Invoke(idx, "isDirectionModalOpen", true);
     }
 
-    public void addColumn(int newCoulmnIdx)
+    public void addColumn(string type)
     {
-        //handleModalChanges.Invoke(idx, "isDirectionModalOpen", false);
-        addNewColumn.Invoke(newCoulmnIdx);
-    }
-
-    public void handleTypeSelect(string type)
-    {
-        setColumnType.Invoke(type);
-    }
-
-    private string GetStickClass()
-    {
-        return isStickTop ? "stick-top" : "stick-bottom cell-modal";
+        int newCoulmnIdx = (isStickTop) ? idx : idx + 1;
+        addNewColumn.Invoke(newCoulmnIdx, type);
     }
 
 }

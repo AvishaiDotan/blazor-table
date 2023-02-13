@@ -9,24 +9,22 @@
 }
 else
 {
-    <main @onclick="(ev) => closeAllModals(true)">
+    <main @onclick="(ev) => closeAllModals(true)" class="full">
         <AppHeader />
-        <section class="table-wrapper full">
-            <table class="full">
+        <section class="table-wrapper">
+            <table>
                 @if (tableData != null)
                 {
                     <TableHeader 
                         TableHeaderData="tableData.tableHeader"
                         handleModalChanges="(idx, modalType, state) => handleModalChanges(idx, modalType, state)" 
-                        addNewColumn="(idx) => addNewColumn(idx)" 
-                        setColumnType="(type) => setColumnType(type)"
+                        addNewColumn="(idx, type) => addNewColumn(idx, type)" 
                     />
                     <TableBody TableBodyData="tableData.tableBody" headers="GetHeaders()" />
                 }
             </table>
             <div class="height-filler">
             </div>
-            <button @onclick="() => addNewColumn(2)">312#!#Print</button>
         </section>
     </main>
 
@@ -80,7 +78,7 @@ else
         }
     }
 
-    public void addNewColumn(int idx)
+    public void addNewColumn(int idx, string type)
     {
         closeAllModals(true);
 
@@ -91,7 +89,7 @@ else
         string propName = "_" + randomNumber.ToString();
 
         TableHeaderClass newHeader = new TableHeaderClass();
-        newHeader.type = "";
+        newHeader.type = type;
         newHeader.value = propName;
         newHeader.isTypeModalOpen = true;
         tableData.tableHeader.Insert(idx, newHeader);
@@ -100,14 +98,6 @@ else
         { 
             item[propName] = "";
         }
-    }
-
-    public void setColumnType(string type)
-    {
-        Console.WriteLine(System.Text.Json.JsonSerializer.Serialize(selectedIdx));
-        tableData.tableHeader[selectedIdx].type = type;
-        
-        StateHasChanged();
     }
 }
 }

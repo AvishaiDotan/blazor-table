@@ -3,20 +3,20 @@
     {
         var row = TableBodyData[rowIdx];
         <tr>
-            @foreach (var header in headers)
-@*            @for (int columnIdx = 0; columnIdx < headers.Count; columnIdx++)*@
+            @*@foreach (var columnIdx in columnIdxs)*@
+            @for (int columnIdx = 0; columnIdx < headers.Count; columnIdx++)
 
             {
- @*               var header = headers[columnIdx];*@
+                var header = headers[columnIdx];
                 @if (row.ContainsKey(header))
                 {
                     <TableCell innerText="@row[header]"
-                   cellIdx="rowIdx"
-                   cellHeader="@header"
-                   HandleTableBodyClick="(which, idx, header) => HandleTableBodyClick.Invoke(which, idx, header)"
-                   isModalOpen='isState("open", idx, header)'
-                   isFocusedCell='isState("focused", idx, header)'
-                   addNewRow="(idx) => addNewRow.Invoke(idx)" />
+                       rowIdx="rowIdx"
+                       columnIdx="columnIdx"
+                       HandleTableBodyClick="(which, rowIdx, columnIdx) => HandleTableBodyClick.Invoke(which, rowIdx, columnIdx)"
+                       isModalOpen='isState("open", rowIdx, columnIdx)'
+                       isFocusedCell='isState("focused", rowIdx, columnIdx)'
+                       addNewRow="(rowIdx) => addNewRow.Invoke(rowIdx)" />
                 }
                 else
                 {
@@ -52,26 +52,22 @@
     public List<string> headers { get; set; }
 
     [Parameter]
-    public (int idx, string header) selectedCell { get; set; }
+    public (int rowIdx, int columnIdx) selectedCell { get; set; }
 
     [Parameter]
-    public (int idx, string header) focusedCell { get; set; }
+    public (int rowIdx, int columnIdx) focusedCell { get; set; }
 
     [Parameter]
-    public Action<int, int, string> HandleTableBodyClick { get; set; }
+    public Action<int, int, int> HandleTableBodyClick { get; set; }
 
     [Parameter]
     public Action<int> addNewRow { get; set; }
 
-    public bool isState(string checkedState, int idx, string header)
+    public bool isState(string checkedState, int idx, int columnIdx)
     {
-        if (checkedState == "open") return (selectedCell.idx == idx && selectedCell.header == header);
-        if (checkedState == "focused") return (focusedCell.idx == idx && focusedCell.header == header);
+        if (checkedState == "open") return (selectedCell.rowIdx == idx && selectedCell.columnIdx == columnIdx);
+        if (checkedState == "focused") return (focusedCell.rowIdx == idx && focusedCell.columnIdx == columnIdx);
         return false;
     }
 
-    public bool isFocused(int idx, string header)
-    {
-        return (selectedCell.idx == idx && selectedCell.header == header);
-    }
 }

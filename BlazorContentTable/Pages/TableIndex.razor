@@ -2,7 +2,6 @@
 <PageTitle>Index</PageTitle>
 
 @inject HttpClient Http
-@inject IJSRuntime JSRuntime
 
 @if (tableData == null)
 {
@@ -18,20 +17,20 @@ else
             class="full"
         >
         <AppHeader />
-        <TableActions addNewRow="(idx) => addNewRow(idx)" />
+        <TableActions addNewRow="(rowIdx) => addNewRow(rowIdx)" />
         <section class="table-wrapper">
             <table>
                 @if (tableData != null)
                 {
                     <TableHeader TableHeaderData="tableData.tableHeader"
-                         handleModalChanges="(idx, modalType, state) => handleModalChanges(idx, modalType, state)"
-                         addNewColumn="(idx, type) => addNewColumn(idx, type)" />
+                         handleModalChanges="(columnIdx, modalType, state) => handleModalChanges(columnIdx, modalType, state)"
+                         addNewColumn="(columnIdx, type) => addNewColumn(columnIdx, type)" />
 
                     <TableBody TableBodyData="tableData.tableBody"
                        headers="GetHeaders()"
-                       HandleTableBodyClick="(which, idx, header) => HandleTableBodyClick(which, idx, header)"
+                       HandleTableBodyClick="(which, idx, columnIdx) => HandleTableBodyClick(which, idx, columnIdx)"
                        selectedCell="selectedCell"
-                       addNewRow="(idx) => addNewRow(idx)"
+                       addNewRow="(rowIdx) => addNewRow(rowIdx)"
                        focusedCell="focusedCell" />
                 }
             </table>
@@ -46,8 +45,8 @@ else
     @code {
 
     static TableData tableData;
-    private (int idx, string header) selectedCell;
-    private (int idx, string header) focusedCell;
+    private (int rowIdx, int columnIdx) selectedCell;
+    private (int rowIdx, int columnIdx) focusedCell;
 
     private ElementReference mainRef { get; set; }
 
@@ -55,6 +54,8 @@ else
     protected override async Task OnInitializedAsync()
     {
         tableData = await Http.GetFromJsonAsync<TableData>("sample-data/initalData.json");
+        selectedCell = (-1, -1);
+        focusedCell = selectedCell;
         //Console.WriteLine(JsonConvert.SerializeObject(tableData, Formatting.Indented));
         //Console.WriteLine(System.Text.Json.JsonSerializer.Serialize(tableData));
     }
@@ -69,16 +70,23 @@ else
 
     private void HandleKeyDown(KeyboardEventArgs e)
     {
-        if (e.ShiftKey && e.Key != "Enter") addNewRow(0);
+        if (e.ShiftKey && e.Key == "Enter") addNewRow(0);
 
-        if (focusedCell.header != null && focusedCell.idx != null)
+        if (focusedCell.columnIdx != -1 && focusedCell.rowIdx != -1)
         {
-            if (e.Key == "ArrowUp" && focusedCell.idx > 0) focusedCell.idx--;
-            else if (e.Key == "ArrowDown" && focusedCell.idx < tableData.tableBody.Count) focusedCell.idx++;
+            if (e.Key == "ArrowUp" && focusedCell.rowIdx > 0) focusedCell.rowIdx--;
+            else if (e.Key == "ArrowDown" && focusedCell.rowIdx < tableData.tableBody.Count - 1) focusedCell.rowIdx++;
+            else if (e.Key == "ArrowLeft" && focusedCell.columnIdx > 0) focusedCell.columnIdx--;
+            else if (e.Key == "ArrowRight" && focusedCell.columnIdx < GetHeaders().Count - 1) focusedCell.columnIdx++;
+            else return;
+        } 
+        else
+        {
+            if (e.Key == "ArrowUp") focusedCell = (tableData.tableBody.Count - 1, 0);
+            else if (e.Key == "ArrowDown" || e.Key == "ArrowRight") focusedCell = (0, 0);
+            else if (e.Key == "ArrowLeft") focusedCell = (0, GetHeaders().Count - 1);
             else return;
         }
-
-        ;
     }
 
     public List<string> GetHeaders()
@@ -97,9 +105,9 @@ else
         foreach (var header in tableData.tableHeader)
         {
             header.isDirectionModalOpen = false;
-            selectedCell.header = "";
-            selectedCell.idx = -1;
         }
+
+        selectedCell = (-1, -1);
 
         if (doUpdate)
         {
@@ -107,18 +115,18 @@ else
         }
     }
 
-    public void handleModalChanges(int idx = 0, string modalType = "isDirectionModalOpen", bool state = false)
+    //TODO: Make isDirectionModal the only option
+    public void handleModalChanges(int columnIdx = 0, string modalType = "isDirectionModalOpen", bool state = false)
     {
         closeAllModals(false);
 
-        tableData.tableHeader[idx].GetType().GetProperty(modalType).SetValue(tableData.tableHeader[idx], state, null);
+        tableData.tableHeader[columnIdx].GetType().GetProperty(modalType).SetValue(tableData.tableHeader[columnIdx], state, null);
         StateHasChanged();
     }
 
-    public void HandleTableBodyClick(int which, int rowIdx, string header)
+    public void HandleTableBodyClick(int which, int rowIdx, int columnIdx)
     {
-        focusedCell.header = header;
-        focusedCell.idx = rowIdx;
+        focusedCell = (rowIdx, columnIdx);
 
         if (which == 2)
         {
@@ -129,7 +137,7 @@ else
     }
 
 
-    public void addNewColumn(int idx, string type)
+    public void addNewColumn(int columnIdx, string type)
     {
         closeAllModals(true);
 
@@ -140,7 +148,7 @@ else
         TableHeaderClass newHeader = new TableHeaderClass();
         newHeader.type = type;
         newHeader.value = propName;
-        tableData.tableHeader.Insert(idx, newHeader);
+        tableData.tableHeader.Insert(columnIdx, newHeader);
 
         foreach (var item in tableData.tableBody)
         {
@@ -148,7 +156,7 @@ else
         }
     }
 
-    public void addNewRow(int idx)
+    public void addNewRow(int rowIdx)
     {
 
         var rand = new Random();
@@ -157,7 +165,7 @@ else
         foreach (var header in tableData.tableHeader)
         {
 
-            newRow["id"] = rand.Next(); // set the id to a random integer value
+            newRow["id"] = rand.Next();
             switch (header.type)
             {
                 case "text":
@@ -178,7 +186,7 @@ else
             }
         }
 
-        tableData.tableBody.Insert(idx, newRow);
+        tableData.tableBody.Insert(rowIdx, newRow);
         StateHasChanged();
     }
 }

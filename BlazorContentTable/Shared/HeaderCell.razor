@@ -1,4 +1,4 @@
-﻿<th class="header-cell" @onmousedown="(ev) => handleMouseDown(ev, idx)" oncontextmenu="return false;">
+﻿<th class="header-cell" @onmousedown="(ev) => handleMouseDown(ev, columnIdx)" oncontextmenu="return false;">
     <div class="cell-wrapper">
         <AppSvgs type="@headerData.type"/>
         @if (headerData.value.StartsWith("_"))
@@ -54,7 +54,7 @@
     public TableHeaderClass headerData { get; set; }
 
     [Parameter]
-    public int idx { get; set; }
+    public int columnIdx { get; set; }
 
     [Parameter]
     public Action<int, string, bool> handleModalChanges { get; set; }
@@ -62,18 +62,18 @@
     [Parameter]
     public Action<int, string> addNewColumn { get; set; }
 
-    public void handleMouseDown(MouseEventArgs e, int idx)
+    public void handleMouseDown(MouseEventArgs e, int columnIdx)
     {
         if (e.Button != 2) return;
 
         topPos = $"{e.OffsetY}px";
         leftPos = $"{e.OffsetX}px";
-        handleModalChanges.Invoke(idx, "isDirectionModalOpen", true);
+        handleModalChanges.Invoke(columnIdx, "isDirectionModalOpen", true);
     }
 
     public void addColumn(string type)
     {
-        int newCoulmnIdx = (isStickTop) ? idx : idx + 1;
+        int newCoulmnIdx = (isStickTop) ? columnIdx : columnIdx + 1;
         addNewColumn.Invoke(newCoulmnIdx, type);
     }
 

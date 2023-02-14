@@ -8,10 +8,10 @@
     @if (isModalOpen)
     {
         <section class="cell-modal"  style="top: @topPos; left: @leftPos">
-            <span @onclick='() => handleClick("add", cellIdx)'>
+            <span @onclick='() => handleClick("add", rowIdx)'>
                 Add record above
             </span>
-            <span @onclick='() => handleClick("add", cellIdx + 1)'>
+            <span @onclick='() => handleClick("add", rowIdx + 1)'>
                 Add record below
             </span>
         </section>
@@ -25,7 +25,7 @@
     string leftPos = "0px";
 
     [Parameter]
-    public Action<int, int, string> HandleTableBodyClick { get; set; }
+    public Action<int, int, int> HandleTableBodyClick { get; set; }
 
     [Parameter]
     public Action<int> addNewRow { get; set; }
@@ -34,10 +34,10 @@
     public object innerText { get; set; }
 
     [Parameter]
-    public int cellIdx { get; set; }
+    public int rowIdx { get; set; }
 
     [Parameter]
-    public string cellHeader { get; set; }
+    public int columnIdx { get; set; }
 
     [Parameter]
     public bool isModalOpen { get; set; }
@@ -52,11 +52,11 @@
         {
             topPos = $"{e.OffsetY}px";
             leftPos = $"{e.OffsetX}px";
-            HandleTableBodyClick.Invoke(2, cellIdx, cellHeader);
+            HandleTableBodyClick.Invoke(2, rowIdx, columnIdx);
         }
         else if(e.Button == 0)
         {
-            HandleTableBodyClick.Invoke(0, cellIdx, cellHeader);
+            HandleTableBodyClick.Invoke(0, rowIdx, columnIdx);
         }
 
     }

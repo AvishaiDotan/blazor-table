@@ -7,11 +7,10 @@
             @foreach (var header in TableHeaderData.Select((item, idx) => new { item, idx }))
             {
                 <HeaderCell 
-                    headerData="@header.item" 
-                    idx="@header.idx" 
-                    addNewColumn="(idx, type) => addNewColumn.Invoke(idx, type)"
-                    handleModalChanges="(idx, modalType, state) => handleModalChanges.Invoke(idx, modalType, state)" 
-                />
+                    headerData="@header.item"
+                    columnIdx="@header.idx"
+                    addNewColumn="(columnIdx, type) => addNewColumn.Invoke(columnIdx, type)"
+                    handleModalChanges="(columnIdx, modalType, state) => handleModalChanges.Invoke(columnIdx, modalType, state)" />
             }
             <th @onclick='() => addNewColumn.Invoke(TableHeaderData.Count(), "text")' oncontextmenu=" return false;">
                 <AppSvgs type="plus"/>

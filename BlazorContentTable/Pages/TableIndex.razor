@@ -2,6 +2,7 @@
 <PageTitle>Index</PageTitle>
 
 @inject HttpClient Http
+@inject IJSRuntime JSRuntime
 
 @if (tableData == null)
 {
@@ -9,22 +10,29 @@
 }
 else
 {
-    <main @onclick="(ev) => closeAllModals(true)" class="full">
+    <main 
+            tabindex="0" 
+            @onkeydown="HandleKeyDown" 
+            @ref="mainRef"
+            @onclick="(ev) => closeAllModals(true)" 
+            class="full"
+        >
         <AppHeader />
+        <TableActions addNewRow="(idx) => addNewRow(idx)" />
         <section class="table-wrapper">
             <table>
                 @if (tableData != null)
                 {
-                    <TableHeader 
-                        TableHeaderData="tableData.tableHeader"
-                        handleModalChanges="(idx, modalType, state) => handleModalChanges(idx, modalType, state)" 
-                        addNewColumn="(idx, type) => addNewColumn(idx, type)" 
-                    />
-                    <TableBody 
-                        TableBodyData="tableData.tableBody" 
-                        headers="GetHeaders()" 
-                        handleTableBodyModalChanges="(idx, header) => handleTableBodyModalChanges(idx, header)"
-                       openedTableBodyCell="selectedCell" />
+                    <TableHeader TableHeaderData="tableData.tableHeader"
+                         handleModalChanges="(idx, modalType, state) => handleModalChanges(idx, modalType, state)"
+                         addNewColumn="(idx, type) => addNewColumn(idx, type)" />
+
+                    <TableBody TableBodyData="tableData.tableBody"
+                       headers="GetHeaders()"
+                       HandleTableBodyClick="(which, idx, header) => HandleTableBodyClick(which, idx, header)"
+                       selectedCell="selectedCell"
+                       addNewRow="(idx) => addNewRow(idx)"
+                       focusedCell="focusedCell" />
                 }
             </table>
             <div class="height-filler">
@@ -38,11 +46,10 @@ else
     @code {
 
     static TableData tableData;
-    //public int selectedIdx = -1;
     private (int idx, string header) selectedCell;
+    private (int idx, string header) focusedCell;
 
-
-
+    private ElementReference mainRef { get; set; }
 
 
     protected override async Task OnInitializedAsync()
@@ -50,6 +57,28 @@ else
         tableData = await Http.GetFromJsonAsync<TableData>("sample-data/initalData.json");
         //Console.WriteLine(JsonConvert.SerializeObject(tableData, Formatting.Indented));
         //Console.WriteLine(System.Text.Json.JsonSerializer.Serialize(tableData));
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await mainRef.FocusAsync();
+        }
+    }
+
+    private void HandleKeyDown(KeyboardEventArgs e)
+    {
+        if (e.ShiftKey && e.Key != "Enter") addNewRow(0);
+
+        if (focusedCell.header != null && focusedCell.idx != null)
+        {
+            if (e.Key == "ArrowUp" && focusedCell.idx > 0) focusedCell.idx--;
+            else if (e.Key == "ArrowDown" && focusedCell.idx < tableData.tableBody.Count) focusedCell.idx++;
+            else return;
+        }
+
+        ;
     }
 
     public List<string> GetHeaders()
@@ -63,29 +92,13 @@ else
         return result;
     }
 
-    public void handleModalChanges(int idx = 0, string modalType = "isDirectionModalOpen", bool state = false)
-    {
-        closeAllModals(false);
-
-        tableData.tableHeader[idx].GetType().GetProperty(modalType).SetValue(tableData.tableHeader[idx], state, null);
-        StateHasChanged();
-    }
-
-    public void handleTableBodyModalChanges(int rowIdx, string header)
-    {
-        selectedCell.header = header;
-        selectedCell.idx = rowIdx;
-
-        Console.WriteLine(System.Text.Json.JsonSerializer.Serialize(selectedCell.header));
-        Console.WriteLine(System.Text.Json.JsonSerializer.Serialize(selectedCell.idx));
-        StateHasChanged();
-    }
-
     public void closeAllModals(bool doUpdate)
     {
         foreach (var header in tableData.tableHeader)
         {
             header.isDirectionModalOpen = false;
+            selectedCell.header = "";
+            selectedCell.idx = -1;
         }
 
         if (doUpdate)
@@ -94,11 +107,31 @@ else
         }
     }
 
+    public void handleModalChanges(int idx = 0, string modalType = "isDirectionModalOpen", bool state = false)
+    {
+        closeAllModals(false);
+
+        tableData.tableHeader[idx].GetType().GetProperty(modalType).SetValue(tableData.tableHeader[idx], state, null);
+        StateHasChanged();
+    }
+
+    public void HandleTableBodyClick(int which, int rowIdx, string header)
+    {
+        focusedCell.header = header;
+        focusedCell.idx = rowIdx;
+
+        if (which == 2)
+        {
+            selectedCell = focusedCell;
+        }
+
+        StateHasChanged();
+    }
+
+
     public void addNewColumn(int idx, string type)
     {
         closeAllModals(true);
-
-        //selectedIdx = idx;
 
         Random rand = new Random();
         int randomNumber = rand.Next();
@@ -110,9 +143,43 @@ else
         tableData.tableHeader.Insert(idx, newHeader);
 
         foreach (var item in tableData.tableBody)
-        { 
+        {
             item[propName] = "";
         }
+    }
+
+    public void addNewRow(int idx)
+    {
+
+        var rand = new Random();
+        var newRow = new Dictionary<string, dynamic>();
+
+        foreach (var header in tableData.tableHeader)
+        {
+
+            newRow["id"] = rand.Next(); // set the id to a random integer value
+            switch (header.type)
+            {
+                case "text":
+                    newRow[header.value] = "_";
+                    break;
+                case "checkbox":
+                    newRow[header.value] = false;
+                    break;
+                case "date":
+                    newRow[header.value] = (long)DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
+                    break;
+                case "number":
+                    newRow[header.value] = -1;
+                    break;
+                default:
+                    newRow[header.value] = null;
+                    break;
+            }
+        }
+
+        tableData.tableBody.Insert(idx, newRow);
+        StateHasChanged();
     }
 }
 }

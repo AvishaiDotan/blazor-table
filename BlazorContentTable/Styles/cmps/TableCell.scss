@@ -1,5 +1,65 @@
-﻿.table-cell {
-    &.stick-top {
-        background-color: red;
+﻿@import '../setup/variables.scss';
+@import '../setup/mixin.scss';
+
+.table-cell {
+    position: relative;
+
+    &.focused {
+        box-shadow: inset $clr-primary-dark 0px 0px 2px;
+    }
+
+    .cell-modal {
+        position: absolute;
+        background-color: $clr2;
+        border-radius: 6px;
+        box-shadow: 0px 0px 7px rgb(12 72 116 / 53%);
+        padding: 5px;
+        display: flex;
+        flex-direction: column;
+        min-width: 174px;
+        gap: 5px;
+        z-index: 10;
+        transition: .4s opacity;
+
+        > span {
+            padding-inline: 10px;
+            transition: .4s background-color;
+
+            &:hover {
+                background-color: #1283da4a;
+            }
+
+            &.selected {
+                background-color: #1283da4a;
+            }
+        }
+    }
+
+    .side-modal {
+        opacity: 0;
+        transition: .4s all;
+
+        &.stick-top {
+            transform: translate(90%, 3px);
+        }
+
+        &.stick-bottom {
+            transform: translate(90%, 25px);
+        }
+
+        &.open, &:hover {
+            opacity: 1;
+        }
+
+        > span {
+            padding-inline: 10px;
+            transition: .4s background-color;
+            @include flexbox(row, flex-start, center);
+            gap: 5px;
+
+            &:hover {
+                background-color: #1283da4a;
+            }
+        }
     }
 }

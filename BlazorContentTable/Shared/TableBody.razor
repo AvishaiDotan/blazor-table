@@ -1,18 +1,22 @@
 ﻿<tbody>
-    @for (int idx = 0; idx < TableBodyData.Count; idx++)
+    @for (int rowIdx = 0; rowIdx < TableBodyData.Count; rowIdx++)
     {
-        var row = TableBodyData[idx];
+        var row = TableBodyData[rowIdx];
         <tr>
             @foreach (var header in headers)
+@*            @for (int columnIdx = 0; columnIdx < headers.Count; columnIdx++)*@
+
             {
+ @*               var header = headers[columnIdx];*@
                 @if (row.ContainsKey(header))
                 {
-                    <TableCell 
-                        innerText="@row[header]"
-                        cellIdx="idx"
-                        cellHeader="@header"
-                        handleTableBodyModalChanges="(idx, header) => handleTableBodyModalChanges.Invoke(idx, header)"
-                        isModalOpen="isOpen(idx, header)" />
+                    <TableCell innerText="@row[header]"
+                   cellIdx="rowIdx"
+                   cellHeader="@header"
+                   HandleTableBodyClick="(which, idx, header) => HandleTableBodyClick.Invoke(which, idx, header)"
+                   isModalOpen='isState("open", idx, header)'
+                   isFocusedCell='isState("focused", idx, header)'
+                   addNewRow="(idx) => addNewRow.Invoke(idx)" />
                 }
                 else
                 {
@@ -27,11 +31,8 @@
         {
             @if (header.idx == 0)
             {
-                <td>
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" class="icon" style="shape-rendering: geometricPrecision;">
-                        <path fill-rule="evenodd" fill="currentColor" d="M9,7 L9,3.5 C9,3.224 8.776,3 8.5,3 L7.5,3 C7.224,3 7,3.224 7,3.5 L7,7 L3.5,7 C3.224,7 3,7.224 3,7.5 L3,8.5 C3,8.776 3.224,9 3.5,9 L7,9 L7,12.5 C7,12.776 7.224,13 7.5,13 L8.5,13 C8.776,13 9,12.776 9,12.5 L9,9 L12.5,9 C12.776,9 13,8.776 13,8.5 L13,7.5 C13,7.224 12.776,7 12.5,7 L9,7 Z">
-                        </path>
-                    </svg>
+                <td @onclick="() => addNewRow.Invoke(TableBodyData.Count)">
+                    <AppSvgs type="plus" />
                 </td>
             }
             else
@@ -43,7 +44,6 @@
 </tbody>
 
 @code {
-    public (int rowIdx, string header) cellInfo { get; set; }
 
     [Parameter]
     public List<Dictionary<string, dynamic>> TableBodyData { get; set; }
@@ -52,18 +52,26 @@
     public List<string> headers { get; set; }
 
     [Parameter]
-    public (int idx, string header) openedTableBodyCell { get; set; }
+    public (int idx, string header) selectedCell { get; set; }
 
     [Parameter]
-    public Action<int, string> handleTableBodyModalChanges { get; set; }
+    public (int idx, string header) focusedCell { get; set; }
 
-    public bool isOpen(int idx, string header)
+    [Parameter]
+    public Action<int, int, string> HandleTableBodyClick { get; set; }
+
+    [Parameter]
+    public Action<int> addNewRow { get; set; }
+
+    public bool isState(string checkedState, int idx, string header)
     {
-        Console.WriteLine("openedIdx:" + openedTableBodyCell.idx.ToString());
-        Console.WriteLine("idx:" + idx.ToString());
-        Console.WriteLine("openedTableBodyCell.header" + openedTableBodyCell.header);
-        Console.WriteLine("header" + header);
-        Console.WriteLine((openedTableBodyCell.idx == idx && openedTableBodyCell.header == header).ToString());
-        return (openedTableBodyCell.idx == idx && openedTableBodyCell.header == header);
+        if (checkedState == "open") return (selectedCell.idx == idx && selectedCell.header == header);
+        if (checkedState == "focused") return (focusedCell.idx == idx && focusedCell.header == header);
+        return false;
+    }
+
+    public bool isFocused(int idx, string header)
+    {
+        return (selectedCell.idx == idx && selectedCell.header == header);
     }
 }

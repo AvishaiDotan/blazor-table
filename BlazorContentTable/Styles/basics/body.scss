@@ -1,3 +1,7 @@
 ﻿body {
     font-family: -apple-system, system-ui;
 }
+
+main:focus {
+    outline: none;
+}

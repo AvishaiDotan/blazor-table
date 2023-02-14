@@ -1,6 +1,11 @@
-﻿<th class="header-cell" @onmousedown="(ev) => handleMouseDown(ev, columnIdx)" oncontextmenu="return false;">
+﻿<th 
+    class="@GetTHClass()" 
+    @onmousedown="(ev) => handleMouseDown(ev, columnIdx)" 
+    @onclick:stopPropagation="true"
+    oncontextmenu="return false;"
+>
     <div class="cell-wrapper">
-        <AppSvgs type="@headerData.type"/>
+        <AppSvgs type="@headerData.type" />
         @if (headerData.value.StartsWith("_"))
         {
             <span></span>
@@ -11,7 +16,7 @@
         }
 
     </div>
-    @if (headerData.isDirectionModalOpen)
+    @if (isModalOpen)
     {
         <section class="cell-modal" style="top: @topPos; left: @leftPos">
             <span class="@($"{(isStickTop ? "selected" : "")}")"
@@ -49,6 +54,14 @@
     private bool isStickTop { get; set; } = false;
     private bool isSideModalOpen { get; set; } = false;
 
+    [Parameter]
+    public Action<int, string, bool> handleModalChanges { get; set; }
+
+    [Parameter]
+    public Action<int, string> addNewColumn { get; set; }
+
+    [Parameter]
+    public Action<int, int, int> HandleTableClick { get; set; }
 
     [Parameter]
     public TableHeaderClass headerData { get; set; }
@@ -57,24 +70,51 @@
     public int columnIdx { get; set; }
 
     [Parameter]
-    public Action<int, string, bool> handleModalChanges { get; set; }
+    public bool isModalOpen { get; set; }
 
     [Parameter]
-    public Action<int, string> addNewColumn { get; set; }
+    public bool isFocusedCell { get; set; }
+
+
 
     public void handleMouseDown(MouseEventArgs e, int columnIdx)
     {
-        if (e.Button != 2) return;
-
-        topPos = $"{e.OffsetY}px";
-        leftPos = $"{e.OffsetX}px";
-        handleModalChanges.Invoke(columnIdx, "isDirectionModalOpen", true);
+        if (e.Button == 2)
+        {
+            topPos = $"{e.OffsetY}px";
+            leftPos = $"{e.OffsetX}px";
+            HandleTableClick.Invoke(2, -100, columnIdx);
+        } 
+        else if (e.Button == 0)
+        {
+            HandleTableClick.Invoke(0, -100, columnIdx);
+        }
     }
 
     public void addColumn(string type)
     {
         int newCoulmnIdx = (isStickTop) ? columnIdx : columnIdx + 1;
         addNewColumn.Invoke(newCoulmnIdx, type);
+    }
+
+    private string GetTHClass()
+    {
+        string cellClass = "header-cell";
+
+        switch (isModalOpen, isFocusedCell)
+        {
+            case (true, false):
+                cellClass += " selected";
+                break;
+            case (false, true):
+                cellClass += " focused";
+                break;
+            case (true, true):
+                cellClass += " selected focused";
+                break;
+        }
+
+        return cellClass;
     }
 
 }

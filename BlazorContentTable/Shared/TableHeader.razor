@@ -10,7 +10,10 @@
                     headerData="@header.item"
                     columnIdx="@header.idx"
                     addNewColumn="(columnIdx, type) => addNewColumn.Invoke(columnIdx, type)"
-                    handleModalChanges="(columnIdx, modalType, state) => handleModalChanges.Invoke(columnIdx, modalType, state)" />
+                    HandleTableClick="(which, rowIdx, columnIdx) => HandleTableClick.Invoke(which, rowIdx, columnIdx)"
+                    isModalOpen='isState("open", -100, header.idx)'
+                    isFocusedCell='isState("focused", -100, header.idx)'
+                    />
             }
             <th @onclick='() => addNewColumn.Invoke(TableHeaderData.Count(), "text")' oncontextmenu=" return false;">
                 <AppSvgs type="plus"/>
@@ -22,11 +25,24 @@
 @code {
 
     [Parameter]
+    public Action<int, string> addNewColumn { get; set; }
+
+    [Parameter]
+    public Action<int, int, int> HandleTableClick { get; set; }
+
+    [Parameter]
     public List<TableHeaderClass> TableHeaderData { get; set; }
 
     [Parameter]
-    public Action<int, string, bool> handleModalChanges { get; set; }
+    public (int rowIdx, int columnIdx) selectedCell { get; set; }
 
     [Parameter]
-    public Action<int, string> addNewColumn { get; set; }
+    public (int rowIdx, int columnIdx) focusedCell { get; set; }
+
+    public bool isState(string checkedState, int rowIdx, int columnIdx)
+    {
+        if (checkedState == "open") return (selectedCell.rowIdx == rowIdx && selectedCell.columnIdx == columnIdx);
+        if (checkedState == "focused") return (focusedCell.rowIdx == rowIdx && focusedCell.columnIdx == columnIdx);
+        return false;
+    }
 }

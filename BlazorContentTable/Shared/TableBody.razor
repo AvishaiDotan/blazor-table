@@ -1,11 +1,10 @@
 ﻿<tbody>
+
     @for (int rowIdx = 0; rowIdx < TableBodyData.Count; rowIdx++)
     {
         var row = TableBodyData[rowIdx];
         <tr>
-            @*@foreach (var columnIdx in columnIdxs)*@
             @for (int columnIdx = 0; columnIdx < headers.Count; columnIdx++)
-
             {
                 var header = headers[columnIdx];
                 @if (row.ContainsKey(header))
@@ -13,10 +12,13 @@
                     <TableCell innerText="@row[header]"
                        rowIdx="rowIdx"
                        columnIdx="columnIdx"
-                       HandleTableBodyClick="(which, rowIdx, columnIdx) => HandleTableBodyClick.Invoke(which, rowIdx, columnIdx)"
+                       HandleTableClick="(which, rowIdx, columnIdx) => HandleTableClick.Invoke(which, rowIdx, columnIdx)"
                        isModalOpen='isState("open", rowIdx, columnIdx)'
                        isFocusedCell='isState("focused", rowIdx, columnIdx)'
-                       addNewRow="(rowIdx) => addNewRow.Invoke(rowIdx)" />
+                       addNewRow="(rowIdx) => addNewRow.Invoke(rowIdx)"
+                       type="@headersData[columnIdx].type"
+                   />
+                       
                 }
                 else
                 {
@@ -41,9 +43,15 @@
             }
         }
     </tr>
+
 </tbody>
 
 @code {
+    [Parameter]
+    public Action<int, int, int> HandleTableClick { get; set; }
+
+    [Parameter]
+    public Action<int> addNewRow { get; set; }
 
     [Parameter]
     public List<Dictionary<string, dynamic>> TableBodyData { get; set; }
@@ -58,16 +66,27 @@
     public (int rowIdx, int columnIdx) focusedCell { get; set; }
 
     [Parameter]
-    public Action<int, int, int> HandleTableBodyClick { get; set; }
+    public List<TableHeaderClass> headersData { get; set; }
 
-    [Parameter]
-    public Action<int> addNewRow { get; set; }
 
-    public bool isState(string checkedState, int idx, int columnIdx)
+    public bool isState(string checkedState, int rowIdx, int columnIdx)
     {
-        if (checkedState == "open") return (selectedCell.rowIdx == idx && selectedCell.columnIdx == columnIdx);
-        if (checkedState == "focused") return (focusedCell.rowIdx == idx && focusedCell.columnIdx == columnIdx);
+        if (checkedState == "open") return (selectedCell.rowIdx == rowIdx && selectedCell.columnIdx == columnIdx);
+        if (checkedState == "focused") return (focusedCell.rowIdx == rowIdx && focusedCell.columnIdx == columnIdx);
         return false;
     }
+
+    public List<string> GetHeaders()
+    {
+        List<string> result = new List<string>();
+
+        foreach (TableHeaderClass header in headersData)
+        {
+            result.Add(header.value);
+        }
+        return result;
+    }
+
+
 
 }

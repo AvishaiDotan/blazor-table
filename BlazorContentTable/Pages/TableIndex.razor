@@ -9,13 +9,11 @@
 }
 else
 {
-    <main 
-            tabindex="0" 
-            @onkeydown="HandleKeyDown" 
-            @ref="mainRef"
-            @onclick="(ev) => closeAllModals(true)" 
-            class="full"
-        >
+    <main tabindex="0"
+      @onkeydown="HandleKeyDown"
+      @ref="mainRef"
+      @onclick="(ev) => closeAllModals(true)"
+      class="full">
         <AppHeader />
         <TableActions addNewRow="(rowIdx) => addNewRow(rowIdx)" />
         <section class="table-wrapper">
@@ -23,15 +21,19 @@ else
                 @if (tableData != null)
                 {
                     <TableHeader TableHeaderData="tableData.tableHeader"
-                         handleModalChanges="(columnIdx, modalType, state) => handleModalChanges(columnIdx, modalType, state)"
-                         addNewColumn="(columnIdx, type) => addNewColumn(columnIdx, type)" />
+                         HandleTableClick="(which, idx, columnIdx) => HandleTableClick(which, idx, columnIdx)"
+                         addNewColumn="(columnIdx, type) => addNewColumn(columnIdx, type)"
+                         selectedCell="selectedCell"
+                         focusedCell="focusedCell" />
 
                     <TableBody TableBodyData="tableData.tableBody"
+                       headersData="tableData.tableHeader"
                        headers="GetHeaders()"
-                       HandleTableBodyClick="(which, idx, columnIdx) => HandleTableBodyClick(which, idx, columnIdx)"
+                       HandleTableClick="(which, idx, columnIdx) => HandleTableClick(which, idx, columnIdx)"
                        selectedCell="selectedCell"
-                       addNewRow="(rowIdx) => addNewRow(rowIdx)"
-                       focusedCell="focusedCell" />
+                       focusedCell="focusedCell"
+                       addNewRow="(rowIdx) => addNewRow(rowIdx)" 
+                       />
                 }
             </table>
             <div class="height-filler">
@@ -47,6 +49,7 @@ else
     static TableData tableData;
     private (int rowIdx, int columnIdx) selectedCell;
     private (int rowIdx, int columnIdx) focusedCell;
+    private (int rowIdx, int columnIdx) editedCell;
 
     private ElementReference mainRef { get; set; }
 
@@ -54,8 +57,9 @@ else
     protected override async Task OnInitializedAsync()
     {
         tableData = await Http.GetFromJsonAsync<TableData>("sample-data/initalData.json");
+
         selectedCell = (-1, -1);
-        focusedCell = selectedCell;
+        focusedCell = editedCell = selectedCell;
         //Console.WriteLine(JsonConvert.SerializeObject(tableData, Formatting.Indented));
         //Console.WriteLine(System.Text.Json.JsonSerializer.Serialize(tableData));
     }
@@ -70,23 +74,43 @@ else
 
     private void HandleKeyDown(KeyboardEventArgs e)
     {
-        if (e.ShiftKey && e.Key == "Enter") addNewRow(0);
-
-        if (focusedCell.columnIdx != -1 && focusedCell.rowIdx != -1)
+        if (e.ShiftKey && e.Key == "Enter")
         {
-            if (e.Key == "ArrowUp" && focusedCell.rowIdx > 0) focusedCell.rowIdx--;
-            else if (e.Key == "ArrowDown" && focusedCell.rowIdx < tableData.tableBody.Count - 1) focusedCell.rowIdx++;
+            addNewRow(0);
+            return;
+        }
+
+        int headerRow = -100;
+        int firstBodyRow = 0;
+        int columnCount = GetHeaders().Count - 1;
+        int rowCount = tableData.tableBody.Count - 1;
+        bool isAlreadyFocused = (focusedCell.columnIdx != -1 && focusedCell.rowIdx != -1);
+
+        if (isAlreadyFocused)
+        {
+            if (e.Key == "Enter")
+            {
+
+            }
+
+            if (e.Key == "ArrowUp" && focusedCell.rowIdx >= 0)
+            {
+                focusedCell.rowIdx = (focusedCell.rowIdx == 0) ? headerRow : focusedCell.rowIdx - 1;
+            }
+            else if (e.Key == "ArrowDown" && focusedCell.rowIdx < rowCount)
+            {
+                focusedCell.rowIdx = (focusedCell.rowIdx == -100) ? firstBodyRow : focusedCell.rowIdx + 1;
+            }
             else if (e.Key == "ArrowLeft" && focusedCell.columnIdx > 0) focusedCell.columnIdx--;
-            else if (e.Key == "ArrowRight" && focusedCell.columnIdx < GetHeaders().Count - 1) focusedCell.columnIdx++;
-            else return;
-        } 
+            else if (e.Key == "ArrowRight" && focusedCell.columnIdx < columnCount) focusedCell.columnIdx++;
+        }
         else
         {
-            if (e.Key == "ArrowUp") focusedCell = (tableData.tableBody.Count - 1, 0);
-            else if (e.Key == "ArrowDown" || e.Key == "ArrowRight") focusedCell = (0, 0);
-            else if (e.Key == "ArrowLeft") focusedCell = (0, GetHeaders().Count - 1);
-            else return;
+            if (e.Key == "ArrowUp") focusedCell = (rowCount, 0);
+            else if (e.Key == "ArrowDown" || e.Key == "ArrowRight") focusedCell = (-100, 0);
+            else if (e.Key == "ArrowLeft") focusedCell = (-100, columnCount);
         }
+        selectedCell = (-1, -1);
     }
 
     public List<string> GetHeaders()
@@ -102,12 +126,7 @@ else
 
     public void closeAllModals(bool doUpdate)
     {
-        foreach (var header in tableData.tableHeader)
-        {
-            header.isDirectionModalOpen = false;
-        }
-
-        selectedCell = (-1, -1);
+        selectedCell = focusedCell = (-1, -1);
 
         if (doUpdate)
         {
@@ -115,18 +134,10 @@ else
         }
     }
 
-    //TODO: Make isDirectionModal the only option
-    public void handleModalChanges(int columnIdx = 0, string modalType = "isDirectionModalOpen", bool state = false)
-    {
-        closeAllModals(false);
-
-        tableData.tableHeader[columnIdx].GetType().GetProperty(modalType).SetValue(tableData.tableHeader[columnIdx], state, null);
-        StateHasChanged();
-    }
-
-    public void HandleTableBodyClick(int which, int rowIdx, int columnIdx)
+    public void HandleTableClick(int which, int rowIdx, int columnIdx)
     {
         focusedCell = (rowIdx, columnIdx);
+        selectedCell = (-1, -1);
 
         if (which == 2)
         {

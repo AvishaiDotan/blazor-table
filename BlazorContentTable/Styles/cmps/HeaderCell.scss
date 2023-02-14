@@ -4,6 +4,10 @@
 .header-cell {
     position: relative;
 
+    &.focused {
+        box-shadow: inset $clr-primary-dark 0px 0px 2px;
+    }
+
     .cell-modal {
         position: absolute;
         background-color: $clr2;

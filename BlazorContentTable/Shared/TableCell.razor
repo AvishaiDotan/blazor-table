@@ -6,16 +6,16 @@
     @switch (type)
     {
         case "checkbox":
-            <input type="checkbox" checked="@value" />
+            <input type="checkbox" checked="@value" @onchange='(ev) => updateDate("checkbox", ev)' />
             break;
         case "number":
-            <input type="number" value="@value" />
+            <input type="number" value="@value" checked="@value" @onchange='(ev) => updateDate("number", ev)' />
             break;
         case "date":
-            <input type="date" value="@value" />
+            <input type="date" value="@value" checked="@value" @onchange='(ev) => updateDate("date", ev)' />
             break;
         case "text":
-            <input type="text" value="@value">
+            <input type="text" value="@value" checked="@value" @onchange='(ev) => updateDate("text", ev)'>
             break;
         default:
             break;
@@ -44,6 +44,7 @@
 
     [Parameter] public Action<int, int, int> HandleTableClick { get; set; }
     [Parameter] public Action<int> addNewRow { get; set; }
+    [Parameter] public Action<string, int, dynamic> onDataChanged { get; set; }
 
     [Parameter] public object innerText { get; set; }
     [Parameter] public int rowIdx { get; set; }
@@ -90,11 +91,15 @@
                 break;
             case "date":
                 value = new DateTime(1970, 1, 1).AddSeconds(double.Parse(innerText.ToString())).ToString("yyyy-MM-dd");
-                Console.WriteLine(value);
                 break;
             case "text":
                 value = innerText.ToString();
                 break;
         }
+    }
+
+    public void updateDate(string key, ChangeEventArgs e)
+    {
+        onDataChanged.Invoke(key, rowIdx, e.Value);
     }
 }

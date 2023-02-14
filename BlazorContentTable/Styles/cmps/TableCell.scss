@@ -10,10 +10,9 @@
 
 
     input {
-        @include cell-indent();
-        @include flexbox();
+        box-sizing: border-box;
         padding-block: 5px;
-        padding-inline-start: 10px;
+        padding-inline: 10px;
         border-inline: 1px solid #dde1e3;
         transition: .2s all;
         position: relative;
@@ -22,13 +21,20 @@
         outline: 0;
         border: 0;
         background-color: transparent;
+        font-family: -apple-system, system-ui;
 
         &:hover {
             cursor: pointer;
         }
 
         &::-webkit-calendar-picker-indicator {
-            
+            filter: invert(60%) sepia(19%) saturate(14%) hue-rotate(5deg) brightness(93%) contrast(100%);
+            transition: .4s;
+
+            &:hover {
+                cursor: pointer;
+                filter: none;
+            }
         }
     }
 

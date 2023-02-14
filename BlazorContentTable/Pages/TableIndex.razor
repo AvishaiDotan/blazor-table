@@ -32,8 +32,8 @@ else
                        HandleTableClick="(which, idx, columnIdx) => HandleTableClick(which, idx, columnIdx)"
                        selectedCell="selectedCell"
                        focusedCell="focusedCell"
-                       addNewRow="(rowIdx) => addNewRow(rowIdx)" 
-                       />
+                       addNewRow="(rowIdx) => addNewRow(rowIdx)"
+                       onDataChanged="(header, rowIdx, data) => updateData(header, rowIdx, data)" />
                 }
             </table>
             <div class="height-filler">
@@ -152,6 +152,9 @@ else
     {
         closeAllModals(true);
 
+        Console.WriteLine(columnIdx);
+        Console.WriteLine(type);
+
         Random rand = new Random();
         int randomNumber = rand.Next();
         string propName = "_" + randomNumber.ToString();
@@ -161,9 +164,11 @@ else
         newHeader.value = propName;
         tableData.tableHeader.Insert(columnIdx, newHeader);
 
+        dynamic customValue = getCustomValue(type);
+
         foreach (var item in tableData.tableBody)
         {
-            item[propName] = "";
+            item[propName] = customValue;
         }
     }
 
@@ -199,6 +204,19 @@ else
 
         tableData.tableBody.Insert(rowIdx, newRow);
         StateHasChanged();
+    }
+
+    public dynamic getCustomValue(string type)
+    {
+        if (type == "text") return "";
+        else if (type == "number") return 0;
+        else if (type == "checkbox") return false;
+        else return 1244249;
+    }
+
+    public void updateData(string header, int rowIdx, dynamic data)
+    {
+        tableData.tableBody[rowIdx][header] = data;
     }
 }
 }

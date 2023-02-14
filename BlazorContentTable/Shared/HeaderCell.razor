@@ -1,7 +1,6 @@
 ﻿<th 
     class="@GetTHClass()" 
     @onmousedown="(ev) => handleMouseDown(ev, columnIdx)" 
-    @onclick:stopPropagation="true"
     oncontextmenu="return false;"
 >
     <div class="cell-wrapper">
@@ -35,7 +34,7 @@
             <section class="@($"{(isStickTop ? "stick-top" : "stick-bottom")} {(isSideModalOpen ? "open" : "closed")} cell-modal side-modal")">
                 @foreach (var column in new List<string> { "text", "checkbox", "date", "number" })
                 {
-                    <span class="add-column-action" @onclick='() => addColumn(column)'>
+                    <span class="add-column-action" @onclick='() => addColumn(column)' @onclick:stopPropagation="true">
                         <span>@column</span>
                         <AppSvgs type="@column" />
                     </span>
@@ -54,26 +53,19 @@
     private bool isStickTop { get; set; } = false;
     private bool isSideModalOpen { get; set; } = false;
 
-    [Parameter]
-    public Action<int, string, bool> handleModalChanges { get; set; }
+    [Parameter] public Action<int, string, bool> handleModalChanges { get; set; }
 
-    [Parameter]
-    public Action<int, string> addNewColumn { get; set; }
+    [Parameter] public Action<int, string> addNewColumn { get; set; }
 
-    [Parameter]
-    public Action<int, int, int> HandleTableClick { get; set; }
+    [Parameter] public Action<int, int, int> HandleTableClick { get; set; }
 
-    [Parameter]
-    public TableHeaderClass headerData { get; set; }
+    [Parameter] public TableHeaderClass headerData { get; set; }
 
-    [Parameter]
-    public int columnIdx { get; set; }
+    [Parameter] public int columnIdx { get; set; }
 
-    [Parameter]
-    public bool isModalOpen { get; set; }
+    [Parameter] public bool isModalOpen { get; set; }
 
-    [Parameter]
-    public bool isFocusedCell { get; set; }
+    [Parameter] public bool isFocusedCell { get; set; }
 
 
 
@@ -87,7 +79,7 @@
         } 
         else if (e.Button == 0)
         {
-            HandleTableClick.Invoke(0, -100, columnIdx);
+            if (!isModalOpen) HandleTableClick.Invoke(0, -100, columnIdx);
         }
     }
 

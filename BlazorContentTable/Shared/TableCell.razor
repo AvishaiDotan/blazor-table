@@ -1,20 +1,21 @@
 ﻿<td class="@GetTDClass()"
     @onmousedown="onHandleMouseDown"
-    oncontextmenu="return false;">
+    oncontextmenu="return false;"
+    style="user-select: @(!isEdited ? "none" : "auto");">
 
     @switch (type)
     {
         case "checkbox":
-            <input type="checkbox" checked="@value" @onchange='(ev) => updateDate("checkbox", ev)' @ref="inputElement" />
+            <input type="checkbox" disabled="@(!isEdited)" checked="@value" @onchange='(ev) => dataChanged("checkbox", ev)' @ref="inputElement" />
             break;
         case "number":
-            <input type="number" value="@value" checked="@value" @onchange='(ev) => updateDate("number", ev)' @ref="inputElement" />
+            <input type="number" disabled="@(!isEdited)" value="@value" @onchange='(ev) => dataChanged("number", ev)' @ref="inputElement" />
             break;
         case "date":
-            <input type="date" value="@value" checked="@value" @onchange='(ev) => updateDate("date", ev)' @ref="inputElement" />
+            <input type="date" disabled="@(!isEdited)" value="@value" @onchange='(ev) => dataChanged("date", ev)' @ref="inputElement" />
             break;
         case "text":
-            <input type="text" value="@value" checked="@value" @onchange='(ev) => updateDate("text", ev)' @ref="inputElement">
+            <input type="text" disabled="@(!isEdited)" value="@value" @onchange='(ev) => dataChanged("text", ev)' @ref="inputElement">
             break;
         default:
             break;
@@ -28,6 +29,12 @@
             </span>
             <span @onclick='() => handleClick("add", rowIdx + 1)'>
                 Add record below
+            </span>
+            <span @onclick='() => handleClick("delete", rowIdx)'>
+                Delete selected row
+            </span>
+            <span @onclick='() => handleClick("duplicate", rowIdx)'>
+                Duplicate selected row
             </span>
         </section>
 
@@ -47,15 +54,17 @@
     dynamic value;
 
     [Parameter] public Action<int, int, int> HandleMouseDown { get; set; }
-    [Parameter] public Action<int> addNewRow { get; set; }
+    [Parameter] public Action<string, int> applyRowAction { get; set; }
     [Parameter] public Action<string, int, dynamic> onDataChanged { get; set; }
+
+    [Parameter] public bool isModalOpen { get; set; }
+    [Parameter] public bool isFocused { get; set; }
+    [Parameter] public bool isEdited { get; set; }
 
     [Parameter] public object innerText { get; set; }
     [Parameter] public int rowIdx { get; set; }
     [Parameter] public int columnIdx { get; set; }
-    [Parameter] public bool isModalOpen { get; set; }
-    [Parameter] public bool isFocused { get; set; }
-    [Parameter] public bool isEdited { get; set; }
+
     [Parameter] public string type { get; set; }
 
     protected override void OnParametersSet()
@@ -73,6 +82,7 @@
 
     public void onHandleMouseDown(MouseEventArgs e)
     {
+
         if (e.Button == 2)
         {
             topPos = $"{e.OffsetY}px";
@@ -81,6 +91,7 @@
         }
         else if (e.Button == 0)
         {
+            if (isModalOpen || isEdited) return;
             HandleMouseDown.Invoke(0, rowIdx, columnIdx);
         }
 
@@ -88,7 +99,7 @@
 
     public void handleClick(string type, int idx)
     {
-        addNewRow.Invoke(idx);
+        applyRowAction.Invoke(type, idx);
     }
 
 
@@ -112,7 +123,7 @@
         }
     }
 
-    public void updateDate(string key, ChangeEventArgs e)
+    public void dataChanged(string key, ChangeEventArgs e)
     {
         onDataChanged.Invoke(key, rowIdx, e.Value);
     }

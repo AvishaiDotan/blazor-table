@@ -1,6 +1,6 @@
 ﻿<th 
     class="@GetTHClass()" 
-    @onmousedown="(ev) => onhandleMouseDown(ev, columnIdx)" 
+    @onmousedown="(ev) => onHandleMouseDown(ev, columnIdx)"
     oncontextmenu="return false;"
 >
     <div class="cell-wrapper">
@@ -8,10 +8,12 @@
         @if (headerData.value.StartsWith("_"))
         {
             <span></span>
+            @*<input type="text" value="" @onchange='(ev) => dataChanged(ev)' @ref="inputElement">*@
         }
         else
         {
             <span>@headerData.value</span>
+            @*<input type="text" value="@headerData.value" @onchange='(ev) => dataChanged(ev)' @ref="inputElement">*@
         }
 
     </div>
@@ -47,6 +49,8 @@
 </th>
 
 @code {
+    private ElementReference inputElement;
+
     string topPos = "0px";
     string leftPos = "0px";
 
@@ -56,15 +60,19 @@
     [Parameter] public Action<int, string, bool> handleModalChanges { get; set; }
     [Parameter] public Action<int, string> addNewColumn { get; set; }
     [Parameter] public Action<int, int, int> HandleMouseDown { get; set; }
+    [Parameter] public Action<string, int, dynamic> onDataChanged { get; set; }
+
+    [Parameter] public bool isModalOpen { get; set; }
+    [Parameter] public bool isFocused { get; set; }
+    [Parameter] public bool isEdited { get; set; }
 
     [Parameter] public TableHeaderClass headerData { get; set; }
     [Parameter] public int columnIdx { get; set; }
-    [Parameter] public bool isModalOpen { get; set; }
-    [Parameter] public bool isFocusedCell { get; set; }
 
 
 
-    public void onhandleMouseDown(MouseEventArgs e, int columnIdx)
+
+    public void onHandleMouseDown(MouseEventArgs e, int columnIdx)
     {
         if (e.Button == 2)
         {
@@ -78,30 +86,36 @@
         }
     }
 
+    protected override void OnParametersSet()
+    {
+        if (isEdited) setFocus();
+    }
+
+    private async Task setFocus()
+    {
+        await inputElement.FocusAsync();
+
+    }
+
+    public void dataChanged(ChangeEventArgs e)
+    {
+        onDataChanged.Invoke("header", columnIdx, e.Value);
+    }
+
     public void addColumn(string type)
     {
         int newCoulmnIdx = (isStickTop) ? columnIdx : columnIdx + 1;
         addNewColumn.Invoke(newCoulmnIdx, type);
     }
 
-    private string GetTHClass()
+    string GetTHClass()
     {
-        string cellClass = "header-cell";
+        string thClass = "header-cell";
+        if (isModalOpen) thClass += " selected";
+        else if (isFocused) thClass += " focused";
+        else if (isEdited) thClass += " edited";
 
-        switch (isModalOpen, isFocusedCell)
-        {
-            case (true, false):
-                cellClass += " selected";
-                break;
-            case (false, true):
-                cellClass += " focused";
-                break;
-            case (true, true):
-                cellClass += " selected focused";
-                break;
-        }
-
-        return cellClass;
+        return thClass;
     }
 
 }

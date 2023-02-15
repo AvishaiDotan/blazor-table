@@ -8,7 +8,7 @@
         <AppSvgs type="sort" />
         Sort
     </span>
-    <span @onclick="() => addNewRow.Invoke(0)">
+    <span @onclick='() => applyRowAction.Invoke("add", 0)'>
         <AppSvgs type="plus" />
         Add record
     </span>
@@ -17,5 +17,5 @@
 
 @code {
     [Parameter]
-    public Action<int> addNewRow { get; set; }
+    public Action<string, int> applyRowAction { get; set; }
 }

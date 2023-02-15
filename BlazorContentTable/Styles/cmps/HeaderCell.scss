@@ -4,6 +4,7 @@
 .header-cell {
     position: relative;
 
+
     &.focused {
         box-shadow: inset $clr-primary-dark 0px 0px 2px;
     }
@@ -11,7 +12,7 @@
     .cell-modal {
         position: absolute;
         background-color: $clr2;
-        border-radius: 6px;
+        border-radius: 1px;
         box-shadow: 0px 0px 7px rgb(12 72 116 / 53%);
         padding: 5px;
         display: flex;
@@ -24,6 +25,7 @@
         > span {
             padding-inline: 10px;
             transition: .4s background-color;
+            padding-block: 5px;
 
             &:hover {
                 background-color: #1283da4a;

@@ -11,9 +11,10 @@
                     columnIdx="@header.idx"
                     addNewColumn="(columnIdx, type) => addNewColumn.Invoke(columnIdx, type)"
                     HandleMouseDown="(which, rowIdx, columnIdx) => HandleMouseDown.Invoke(which, rowIdx, columnIdx)"
+                    onDataChanged="(header, columnIdx, data) => onDataChanged.Invoke(header, columnIdx, data)"
                     isModalOpen='isState("open", -100, header.idx)'
-                    isFocusedCell='isState("focused", -100, header.idx)'
-                    />
+                    isFocused='isState("focused", -100, header.idx)'
+                    isEdited='isState("edit", -100, header.idx)' />
             }
             <th @onclick='() => addNewColumn.Invoke(TableHeaderData.Count(), "text")' oncontextmenu=" return false;">
                 <AppSvgs type="plus"/>
@@ -24,25 +25,22 @@
 
 @code {
 
-    [Parameter]
-    public Action<int, string> addNewColumn { get; set; }
+    [Parameter] public Action<int, string> addNewColumn { get; set; }
+    [Parameter] public Action<int, int, int> HandleMouseDown { get; set; }
+    [Parameter] public Action<string, int, dynamic> onDataChanged { get; set; }
 
-    [Parameter]
-    public Action<int, int, int> HandleMouseDown { get; set; }
+    [Parameter] public (int rowIdx, int columnIdx) cellWithOpenModal { get; set; }
+    [Parameter] public (int rowIdx, int columnIdx) focusedCell { get; set; }
+    [Parameter] public (int rowIdx, int columnIdx) editedCell { get; set; }
 
-    [Parameter]
-    public List<TableHeaderClass> TableHeaderData { get; set; }
-
-    [Parameter]
-    public (int rowIdx, int columnIdx) selectedCell { get; set; }
-
-    [Parameter]
-    public (int rowIdx, int columnIdx) focusedCell { get; set; }
+    [Parameter] public List<TableHeaderClass> TableHeaderData { get; set; }
 
     public bool isState(string checkedState, int rowIdx, int columnIdx)
     {
-        if (checkedState == "open") return (selectedCell.rowIdx == rowIdx && selectedCell.columnIdx == columnIdx);
+
+        if (checkedState == "open") return (cellWithOpenModal.rowIdx == rowIdx && cellWithOpenModal.columnIdx == columnIdx);
         if (checkedState == "focused") return (focusedCell.rowIdx == rowIdx && focusedCell.columnIdx == columnIdx);
+        if (checkedState == "edit") return (editedCell.rowIdx == rowIdx && editedCell.columnIdx == columnIdx);
         return false;
     }
 }

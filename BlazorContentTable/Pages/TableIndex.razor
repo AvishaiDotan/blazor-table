@@ -15,7 +15,7 @@ else
       @onclick="(ev) => clearAllSelections(true)"
       class="full">
         <AppHeader />
-        <TableActions addNewRow="(rowIdx) => addNewRow(rowIdx)" />
+        <TableActions applyRowAction='(type, rowIdx) => applyRowAction("add", 0)' />
         <section class="table-wrapper">
             <table>
                 @if (tableData != null)
@@ -23,17 +23,19 @@ else
                     <TableHeader TableHeaderData="tableData.tableHeader"
                          HandleMouseDown="(which, idx, columnIdx) => HandleMouseDown(which, idx, columnIdx)"
                          addNewColumn="(columnIdx, type) => addNewColumn(columnIdx, type)"
-                         selectedCell="selectedCell"
-                         focusedCell="focusedCell" />
+                         onDataChanged="(header, columnIdx, data) => updateData(header, columnIdx, data)"
+                         cellWithOpenModal="cellWithOpenModal"
+                         focusedCell="focusedCell"
+                         editedCell="editedCell" />
 
                     <TableBody TableBodyData="tableData.tableBody"
                        headersData="tableData.tableHeader"
                        headers="GetHeaders()"
-                       HandleMouseDown="(which, idx, columnIdx) => HandleMouseDown(which, idx, columnIdx)"
-                       selectedCell="selectedCell"
+                       cellWithOpenModal="cellWithOpenModal"
                        focusedCell="focusedCell"
                        editedCell="editedCell"
-                       addNewRow="(rowIdx) => addNewRow(rowIdx)"
+                       HandleMouseDown="(which, idx, columnIdx) => HandleMouseDown(which, idx, columnIdx)"
+                       applyRowAction="(type, rowIdx) => applyRowAction(type, rowIdx)"
                        onDataChanged="(header, rowIdx, data) => updateData(header, rowIdx, data)" />
                 }
             </table>
@@ -48,7 +50,7 @@ else
     @code {
 
     static TableData tableData;
-    private (int rowIdx, int columnIdx) selectedCell;
+    private (int rowIdx, int columnIdx) cellWithOpenModal;
     private (int rowIdx, int columnIdx) focusedCell;
     private (int rowIdx, int columnIdx) editedCell;
 
@@ -59,8 +61,8 @@ else
     {
         tableData = await Http.GetFromJsonAsync<TableData>("sample-data/initalData.json");
 
-        selectedCell = (-1, -1);
-        focusedCell = editedCell = selectedCell;
+        cellWithOpenModal = (-1, -1);
+        focusedCell = editedCell = cellWithOpenModal;
         //Console.WriteLine(JsonConvert.SerializeObject(tableData, Formatting.Indented));
         //Console.WriteLine(System.Text.Json.JsonSerializer.Serialize(tableData));
     }
@@ -75,6 +77,7 @@ else
 
     private void HandleKeyDown(KeyboardEventArgs e)
     {
+
         if (e.ShiftKey && e.Key == "Enter")
         {
             addNewRow(0);
@@ -85,31 +88,28 @@ else
         int firstBodyRow = 0;
         int columnCount = GetHeaders().Count - 1;
         int rowCount = tableData.tableBody.Count - 1;
-        bool isAlreadyFocused = (focusedCell.columnIdx != -1 && focusedCell.rowIdx != -1);
+        bool isFocused = (focusedCell.columnIdx != -1 && focusedCell.rowIdx != -1);
         bool isEditing = (editedCell.rowIdx == focusedCell.rowIdx && editedCell.columnIdx == focusedCell.columnIdx);
 
-        if (isAlreadyFocused && !isEditing)
+
+        if (isFocused && !isEditing)
         {
             if (e.Key == "ArrowUp" && focusedCell.rowIdx >= 0)
             {
-                focusedCell.rowIdx = (focusedCell.rowIdx == 0) ? headerRow : focusedCell.rowIdx - 1;
+                if (focusedCell.rowIdx == 0) focusedCell.rowIdx = headerRow;
+                else focusedCell.rowIdx--;
             }
             else if (e.Key == "ArrowDown" && focusedCell.rowIdx < rowCount)
             {
-                focusedCell.rowIdx = (focusedCell.rowIdx == -100) ? firstBodyRow : focusedCell.rowIdx + 1;
+                if (focusedCell.rowIdx == -100) focusedCell.rowIdx = firstBodyRow;
+                else focusedCell.rowIdx++;
             }
             else if (e.Key == "ArrowLeft" && focusedCell.columnIdx > 0) focusedCell.columnIdx--;
             else if (e.Key == "ArrowRight" && focusedCell.columnIdx < columnCount) focusedCell.columnIdx++;
-            else if (e.Key == "Enter") editedCell = focusedCell;
-            //else if (e.Key == "ArrowUp" || e.Key == "ArrowDown" || e.Key == "ArrowLeft" || e.Key == "ArrowRight")
-            //{
-            //    //editedCell = (-1, -1);
-            //    //mainRef.FocusAsync();
-            //    //StateHasChanged();
-            //    return;
-            //}
+            else if (e.Key == "Enter" || e.Key == "F2") editedCell = focusedCell;
+            else if (e.CtrlKey && e.Key == "Delete") deleteRow(focusedCell.rowIdx);
         }
-        else if (isAlreadyFocused && isEditing)
+        else if (isFocused && isEditing)
         {
 
         }
@@ -119,7 +119,8 @@ else
             else if (e.Key == "ArrowDown" || e.Key == "ArrowRight") focusedCell = (-100, 0);
             else if (e.Key == "ArrowLeft") focusedCell = (-100, columnCount);
         }
-        selectedCell = (-1, -1);
+        cellWithOpenModal = (-1, -1);
+        StateHasChanged();
     }
 
     public void HandleMouseDown(int which, int rowIdx, int columnIdx)
@@ -127,17 +128,43 @@ else
         if (which == 0)
         {
             focusedCell = (rowIdx, columnIdx);
-            editedCell = focusedCell;
-            //selectedCell = (-1, -1);
+            editedCell = cellWithOpenModal = (-1, -1);
+
+            handleDoubleClick();
+            mainRef.FocusAsync();
         }
         else if (which == 2)
         {
             editedCell = (-1, -1);
             focusedCell = (rowIdx, columnIdx);
-            selectedCell = focusedCell;
+            cellWithOpenModal = focusedCell;
         }
 
         StateHasChanged();
+    }
+
+
+    private int _clickCount = 0;
+    private async void handleDoubleClick()
+    {
+        _clickCount++;
+
+
+        if (_clickCount == 1)
+        {
+            
+            await Task.Delay(500);
+            if (_clickCount == 1)
+            {
+                
+            }
+            _clickCount = 0;
+        }
+        else if (_clickCount == 2)
+        {
+            editedCell = focusedCell;
+            _clickCount = 0;
+        }
     }
 
     public List<string> GetHeaders()
@@ -153,12 +180,10 @@ else
 
     public void clearAllSelections(bool doUpdate)
     {
-        selectedCell = focusedCell = editedCell = (-1, -1);
-
+        cellWithOpenModal = (-1, -1);
         if (doUpdate) StateHasChanged();
 
     }
-
 
     public void addNewColumn(int columnIdx, string type)
     {
@@ -183,6 +208,15 @@ else
         {
             item[propName] = customValue;
         }
+        StateHasChanged();
+    }
+
+    public void applyRowAction(string type, int rowIdx)
+    {
+        if (type == "add") addNewRow(rowIdx);
+        if (type == "delete") deleteRow(rowIdx);
+        if (type == "duplicate") duplicateRow(rowIdx);
+        StateHasChanged();
     }
 
     public void addNewRow(int rowIdx)
@@ -204,10 +238,10 @@ else
                     newRow[header.value] = false;
                     break;
                 case "date":
-                    newRow[header.value] = (long)DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
+                    newRow[header.value] = (int)DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
                     break;
                 case "number":
-                    newRow[header.value] = -1;
+                    newRow[header.value] = 0;
                     break;
                 default:
                     newRow[header.value] = null;
@@ -216,7 +250,16 @@ else
         }
 
         tableData.tableBody.Insert(rowIdx, newRow);
-        StateHasChanged();
+    }
+
+    public void deleteRow(int rowIdx)
+    {
+        tableData.tableBody.RemoveAt(rowIdx);
+    }
+
+    public void duplicateRow(int rowIdx)
+    {
+        tableData.tableBody.Insert(rowIdx, tableData.tableBody[rowIdx]);
     }
 
     public dynamic getCustomValue(string type)
@@ -227,9 +270,11 @@ else
         else return 1244249;
     }
 
-    public void updateData(string header, int rowIdx, dynamic data)
+    public void updateData(string header, int idx, dynamic data)
     {
-        tableData.tableBody[rowIdx][header] = data;
+        if (header == "header") tableData.tableHeader[idx].value = data;
+        else tableData.tableBody[idx][header] = data;
+        StateHasChanged();
     }
 }
 }

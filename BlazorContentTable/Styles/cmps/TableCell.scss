@@ -4,6 +4,7 @@
 .table-cell {
     position: relative;
     transition: .4s box-shadow;
+    padding-block: 10px;
 
     &.focused {
         box-shadow: inset $clr-primary-dark 0px 0px 2px;
@@ -41,7 +42,13 @@
                 filter: none;
             }
         }
+
+        &[disabled] {  
+            color: $clr-2;
+        }
     }
+
+
 
     .cell-modal {
         position: absolute;
@@ -59,6 +66,7 @@
         > span {
             padding-inline: 10px;
             transition: .4s background-color;
+            padding-block: 5px;
 
             &:hover {
                 background-color: #1283da4a;

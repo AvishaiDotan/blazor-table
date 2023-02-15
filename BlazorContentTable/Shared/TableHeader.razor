@@ -10,7 +10,7 @@
                     headerData="@header.item"
                     columnIdx="@header.idx"
                     addNewColumn="(columnIdx, type) => addNewColumn.Invoke(columnIdx, type)"
-                    HandleTableClick="(which, rowIdx, columnIdx) => HandleTableClick.Invoke(which, rowIdx, columnIdx)"
+                    HandleMouseDown="(which, rowIdx, columnIdx) => HandleMouseDown.Invoke(which, rowIdx, columnIdx)"
                     isModalOpen='isState("open", -100, header.idx)'
                     isFocusedCell='isState("focused", -100, header.idx)'
                     />
@@ -28,7 +28,7 @@
     public Action<int, string> addNewColumn { get; set; }
 
     [Parameter]
-    public Action<int, int, int> HandleTableClick { get; set; }
+    public Action<int, int, int> HandleMouseDown { get; set; }
 
     [Parameter]
     public List<TableHeaderClass> TableHeaderData { get; set; }

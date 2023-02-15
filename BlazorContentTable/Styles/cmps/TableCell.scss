@@ -3,9 +3,14 @@
 
 .table-cell {
     position: relative;
+    transition: .4s box-shadow;
 
     &.focused {
         box-shadow: inset $clr-primary-dark 0px 0px 2px;
+    }
+
+    &.edited {
+        box-shadow: inset #1076c4 0px 0px 6px 1px;
     }
 
 
@@ -41,7 +46,7 @@
     .cell-modal {
         position: absolute;
         background-color: $clr2;
-        border-radius: 6px;
+        border-radius: 2px;
         box-shadow: 0px 0px 7px rgb(12 72 116 / 53%);
         padding: 5px;
         display: flex;

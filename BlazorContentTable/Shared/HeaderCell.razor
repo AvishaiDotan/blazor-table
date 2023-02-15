@@ -1,6 +1,6 @@
 ﻿<th 
     class="@GetTHClass()" 
-    @onmousedown="(ev) => handleMouseDown(ev, columnIdx)" 
+    @onmousedown="(ev) => onhandleMouseDown(ev, columnIdx)" 
     oncontextmenu="return false;"
 >
     <div class="cell-wrapper">
@@ -54,32 +54,27 @@
     private bool isSideModalOpen { get; set; } = false;
 
     [Parameter] public Action<int, string, bool> handleModalChanges { get; set; }
-
     [Parameter] public Action<int, string> addNewColumn { get; set; }
-
-    [Parameter] public Action<int, int, int> HandleTableClick { get; set; }
+    [Parameter] public Action<int, int, int> HandleMouseDown { get; set; }
 
     [Parameter] public TableHeaderClass headerData { get; set; }
-
     [Parameter] public int columnIdx { get; set; }
-
     [Parameter] public bool isModalOpen { get; set; }
-
     [Parameter] public bool isFocusedCell { get; set; }
 
 
 
-    public void handleMouseDown(MouseEventArgs e, int columnIdx)
+    public void onhandleMouseDown(MouseEventArgs e, int columnIdx)
     {
         if (e.Button == 2)
         {
             topPos = $"{e.OffsetY}px";
             leftPos = $"{e.OffsetX}px";
-            HandleTableClick.Invoke(2, -100, columnIdx);
+            HandleMouseDown.Invoke(2, -100, columnIdx);
         } 
         else if (e.Button == 0)
         {
-            if (!isModalOpen) HandleTableClick.Invoke(0, -100, columnIdx);
+            if (!isModalOpen) HandleMouseDown.Invoke(0, -100, columnIdx);
         }
     }
 

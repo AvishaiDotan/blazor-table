@@ -12,7 +12,7 @@ else
     <main tabindex="0"
       @onkeydown="HandleKeyDown"
       @ref="mainRef"
-      @onclick="(ev) => closeAllModals(true)"
+      @onclick="(ev) => clearAllSelections(true)"
       class="full">
         <AppHeader />
         <TableActions addNewRow="(rowIdx) => addNewRow(rowIdx)" />
@@ -21,7 +21,7 @@ else
                 @if (tableData != null)
                 {
                     <TableHeader TableHeaderData="tableData.tableHeader"
-                         HandleTableClick="(which, idx, columnIdx) => HandleTableClick(which, idx, columnIdx)"
+                         HandleMouseDown="(which, idx, columnIdx) => HandleMouseDown(which, idx, columnIdx)"
                          addNewColumn="(columnIdx, type) => addNewColumn(columnIdx, type)"
                          selectedCell="selectedCell"
                          focusedCell="focusedCell" />
@@ -29,9 +29,10 @@ else
                     <TableBody TableBodyData="tableData.tableBody"
                        headersData="tableData.tableHeader"
                        headers="GetHeaders()"
-                       HandleTableClick="(which, idx, columnIdx) => HandleTableClick(which, idx, columnIdx)"
+                       HandleMouseDown="(which, idx, columnIdx) => HandleMouseDown(which, idx, columnIdx)"
                        selectedCell="selectedCell"
                        focusedCell="focusedCell"
+                       editedCell="editedCell"
                        addNewRow="(rowIdx) => addNewRow(rowIdx)"
                        onDataChanged="(header, rowIdx, data) => updateData(header, rowIdx, data)" />
                 }
@@ -85,14 +86,10 @@ else
         int columnCount = GetHeaders().Count - 1;
         int rowCount = tableData.tableBody.Count - 1;
         bool isAlreadyFocused = (focusedCell.columnIdx != -1 && focusedCell.rowIdx != -1);
+        bool isEditing = (editedCell.rowIdx == focusedCell.rowIdx && editedCell.columnIdx == focusedCell.columnIdx);
 
-        if (isAlreadyFocused)
+        if (isAlreadyFocused && !isEditing)
         {
-            if (e.Key == "Enter")
-            {
-
-            }
-
             if (e.Key == "ArrowUp" && focusedCell.rowIdx >= 0)
             {
                 focusedCell.rowIdx = (focusedCell.rowIdx == 0) ? headerRow : focusedCell.rowIdx - 1;
@@ -103,6 +100,18 @@ else
             }
             else if (e.Key == "ArrowLeft" && focusedCell.columnIdx > 0) focusedCell.columnIdx--;
             else if (e.Key == "ArrowRight" && focusedCell.columnIdx < columnCount) focusedCell.columnIdx++;
+            else if (e.Key == "Enter") editedCell = focusedCell;
+            //else if (e.Key == "ArrowUp" || e.Key == "ArrowDown" || e.Key == "ArrowLeft" || e.Key == "ArrowRight")
+            //{
+            //    //editedCell = (-1, -1);
+            //    //mainRef.FocusAsync();
+            //    //StateHasChanged();
+            //    return;
+            //}
+        }
+        else if (isAlreadyFocused && isEditing)
+        {
+
         }
         else
         {
@@ -111,6 +120,24 @@ else
             else if (e.Key == "ArrowLeft") focusedCell = (-100, columnCount);
         }
         selectedCell = (-1, -1);
+    }
+
+    public void HandleMouseDown(int which, int rowIdx, int columnIdx)
+    {
+        if (which == 0)
+        {
+            focusedCell = (rowIdx, columnIdx);
+            editedCell = focusedCell;
+            //selectedCell = (-1, -1);
+        }
+        else if (which == 2)
+        {
+            editedCell = (-1, -1);
+            focusedCell = (rowIdx, columnIdx);
+            selectedCell = focusedCell;
+        }
+
+        StateHasChanged();
     }
 
     public List<string> GetHeaders()
@@ -124,33 +151,19 @@ else
         return result;
     }
 
-    public void closeAllModals(bool doUpdate)
+    public void clearAllSelections(bool doUpdate)
     {
-        selectedCell = focusedCell = (-1, -1);
+        selectedCell = focusedCell = editedCell = (-1, -1);
 
-        if (doUpdate)
-        {
-            StateHasChanged();
-        }
-    }
+        if (doUpdate) StateHasChanged();
 
-    public void HandleTableClick(int which, int rowIdx, int columnIdx)
-    {
-        focusedCell = (rowIdx, columnIdx);
-        selectedCell = (-1, -1);
-
-        if (which == 2)
-        {
-            selectedCell = focusedCell;
-        }
-
-        StateHasChanged();
     }
 
 
     public void addNewColumn(int columnIdx, string type)
     {
-        closeAllModals(true);
+        clearAllSelections(true);
+
 
         Console.WriteLine(columnIdx);
         Console.WriteLine(type);

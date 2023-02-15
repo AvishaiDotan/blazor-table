@@ -12,12 +12,13 @@
                     <TableCell innerText="@row[header]"
                        rowIdx="rowIdx"
                        columnIdx="columnIdx"
-                       HandleTableClick="(which, rowIdx, columnIdx) => HandleTableClick.Invoke(which, rowIdx, columnIdx)"
+                       HandleMouseDown="(which, rowIdx, columnIdx) => HandleMouseDown.Invoke(which, rowIdx, columnIdx)"
                        isModalOpen='isState("open", rowIdx, columnIdx)'
-                       isFocusedCell='isState("focused", rowIdx, columnIdx)'
+                       isFocused='isState("focused", rowIdx, columnIdx)'
+                       isEdited='isState("edit", rowIdx, columnIdx)'
                        addNewRow="(rowIdx) => addNewRow.Invoke(rowIdx)"
                        type="@headersData[columnIdx].type"
-                        onDataChanged="(header, rowIdx, data) => onDataChanged.Invoke(header, rowIdx, data)" />
+                       onDataChanged="(header, rowIdx, data) => onDataChanged.Invoke(header, rowIdx, data)" />
                        
                 }
                 else
@@ -48,21 +49,24 @@
 
 @code {
     [Parameter] public Action<string, int, dynamic> onDataChanged { get; set; }
-    [Parameter] public Action<int, int, int> HandleTableClick { get; set; }
+    [Parameter] public Action<int, int, int> HandleMouseDown { get; set; }
     [Parameter] public Action<int> addNewRow { get; set; }
 
     [Parameter] public List<Dictionary<string, dynamic>> TableBodyData { get; set; }
     [Parameter] public List<string> headers { get; set; }
-    [Parameter] public (int rowIdx, int columnIdx) selectedCell { get; set; }
-    [Parameter] public (int rowIdx, int columnIdx) focusedCell { get; set; }
+
     [Parameter] public List<TableHeaderClass> headersData { get; set; }
 
+    [Parameter] public (int rowIdx, int columnIdx) selectedCell { get; set; }
+    [Parameter] public (int rowIdx, int columnIdx) focusedCell { get; set; }
+    [Parameter] public (int rowIdx, int columnIdx) editedCell { get; set; }
 
     public bool isState(string checkedState, int rowIdx, int columnIdx)
     {
-        
+
         if (checkedState == "open") return (selectedCell.rowIdx == rowIdx && selectedCell.columnIdx == columnIdx);
         if (checkedState == "focused") return (focusedCell.rowIdx == rowIdx && focusedCell.columnIdx == columnIdx);
+        if (checkedState == "edit") return (editedCell.rowIdx == rowIdx && editedCell.columnIdx == columnIdx);
         return false;
     }
 

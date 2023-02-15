@@ -1,0 +1,28 @@
+﻿@*@switch (type)
+{
+    case "checkbox":
+        <input type="@type" checked="@value" @onchange='(ev) => onDataChange(type, ev, rowIdx)' @ref="inputElement" />
+        break;
+    case "number":
+        <input type="@type" value="@value" checked="@value" @onchange='(ev) => onDataChange(type, ev, rowIdx)' @ref="inputElement" />
+        break;
+    case "date":
+        <input type="@type" value="@value" checked="@value" @onchange='(ev) => onDataChange("date", ev)' @ref="inputElement" />
+        break;
+    case "text":
+        <input type="@type" value="@value" checked="@value" @onchange='(ev) => onDataChange("text", ev)' @ref="inputElement">
+        break;
+    default:
+        break;
+}
+<TableInput rowIdx="rowIdx" type="type" value="value" @ref="inputElement" onDataChange="(key, rowIdx, e.Value) => onDataChange(key, rowIdx, e.Value)" />
+@code {
+    [Parameter] public Action<int, int, dynamic> onDataChange { get; set; }
+
+    [Parameter] public string type { get; set; }
+    [Parameter] public dynamic value { get; set; }
+    [Parameter] public int rowIdx { get; set; }
+    
+
+}
+*@

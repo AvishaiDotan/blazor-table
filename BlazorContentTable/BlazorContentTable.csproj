@@ -17,13 +17,6 @@
     <Folder Include="wwwroot\css\cmps\" />
   </ItemGroup>
 
-	<ItemGroup>
-		<ComponentScssFiles Include="**/*/*.scss" Exclude="node_modules/**;wwwroot/**;Styles/**" />
-	</ItemGroup>
-	
-  <Target Name="CompileGlobalSass" BeforeTargets="Compile">
-    <Message Text="Compiling global SCSS files" Importance="high" />
-    <Exec Command="npm run sass -- --style=compressed Styles:wwwroot/css" />
-  </Target>
+
 
 </Project>

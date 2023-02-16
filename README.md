@@ -2,7 +2,7 @@
 
 This is a Blazor component that displays a table and allows users to interact with it, including adding and deleting columns and records, editing cells, sorting and filtering the table, and more.
 
-![Index](https://user-images.githubusercontent.com/108017307/219497864-4147d44a-e5b3-4849-9e9e-9334d95e0031.png)
+
 
 ## Features
 
@@ -16,6 +16,8 @@ table, the user can either click on the "+" button located at the end of the tab
 ![blazor add row](https://user-images.githubusercontent.com/108017307/219497926-804e9a4a-1cb3-41d9-b020-863d31bae6fb.jpg)
 
 To add a new record to the table, the user can either click the "Add record" button located above the table, click the "+" button at the end of the table, or right-click on a record and choose "Add record below". Alternatively, the user can press the "Shift" and "Enter" keys on the keyboard.
+
+![Index (1) (1) (1)](https://user-images.githubusercontent.com/108017307/219501950-2f3090ad-5e89-4d33-bb1d-5c01b58e104b.gif)
 
 ### Editing Cells
 

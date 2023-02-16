@@ -13,7 +13,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       # Checkout the code
-      - uses: actions/checkout@v2.5.1
+      - uses: actions/checkout@v2
 
       # Install .NET Core SDK
       - name: Setup .NET Core

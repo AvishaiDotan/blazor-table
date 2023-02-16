@@ -1,12 +1,13 @@
 ﻿<header class="table-actions full">
-
     <span>
         <AppSvgs type="filter" />
         Filter
+        
     </span>
     <span>
         <AppSvgs type="sort" />
         Sort
+        <SortModal action="sort" headers="headers" />
     </span>
     <span @onclick='() => applyRowAction.Invoke("add", 0)'>
         <AppSvgs type="plus" />
@@ -16,6 +17,7 @@
 </header>
 
 @code {
-    [Parameter]
-    public Action<string, int> applyRowAction { get; set; }
+    [Parameter] public Action<string, int> applyRowAction { get; set; }
+
+    [Parameter] public List<string> headers { get; set; }
 }

@@ -8,4 +8,5 @@ namespace BlazorContentTable.Shared
         public List<Dictionary<string, dynamic>> tableBody { get; set; }
 
     }
+
 }

@@ -5,17 +5,18 @@
 
     @switch (type)
     {
+
         case "checkbox":
-            <input type="checkbox" disabled="@(!isEdited)" checked="@value" @onchange='(ev) => dataChanged("checkbox", ev)' @ref="inputElement" />
+            <input type="checkbox" disabled="@(!isEdited)" checked="@value" @onchange='(ev) => dataChanged(header, ev)' @ref="inputElement" />
             break;
         case "number":
-            <input type="number" disabled="@(!isEdited)" value="@value" @onchange='(ev) => dataChanged("number", ev)' @ref="inputElement" />
+            <input type="number" disabled="@(!isEdited)" value="@value" @onchange='(ev) => dataChanged(header, ev)' @ref="inputElement" />
             break;
         case "date":
-            <input type="date" disabled="@(!isEdited)" value="@value" @onchange='(ev) => dataChanged("date", ev)' @ref="inputElement" />
+            <input type="date" disabled="@(!isEdited)" value="@value" @onchange='(ev) => dataChanged(header, ev)' @ref="inputElement" />
             break;
         case "text":
-            <input type="text" disabled="@(!isEdited)" value="@value" @onchange='(ev) => dataChanged("text", ev)' @ref="inputElement">
+            <input type="text" disabled="@(!isEdited)" value="@value" @onchange='(ev) => dataChanged(header, ev)' @ref="inputElement">
             break;
         default:
             break;
@@ -51,8 +52,6 @@
     string topPos = "0px";
     string leftPos = "0px";
 
-    dynamic value;
-
     [Parameter] public Action<int, int, int> HandleMouseDown { get; set; }
     [Parameter] public Action<string, int> applyRowAction { get; set; }
     [Parameter] public Action<string, int, dynamic> onDataChanged { get; set; }
@@ -61,15 +60,17 @@
     [Parameter] public bool isFocused { get; set; }
     [Parameter] public bool isEdited { get; set; }
 
-    [Parameter] public object innerText { get; set; }
+    [Parameter] public dynamic value { get; set; }
     [Parameter] public int rowIdx { get; set; }
     [Parameter] public int columnIdx { get; set; }
 
     [Parameter] public string type { get; set; }
+    [Parameter] public string header { get; set; }
 
     protected override void OnParametersSet()
     {
-        convertTo();
+        //convertTo(); .GetBoolean()
+        Console.WriteLine(value);
         if (isEdited) setFocus("input");
     }
 
@@ -102,26 +103,31 @@
         applyRowAction.Invoke(type, idx);
     }
 
-
-
-    public void convertTo()
+    public string modifyDate(dynamic timestamp)
     {
-        switch (type)
-        {
-            case "checkbox":
-                value = bool.Parse(innerText.ToString());
-                break;
-            case "number":
-                value = int.Parse(innerText.ToString());
-                break;
-            case "date":
-                value = new DateTime(1970, 1, 1).AddSeconds(double.Parse(innerText.ToString())).ToString("yyyy-MM-dd");
-                break;
-            case "text":
-                value = innerText.ToString();
-                break;
-        }
+        return new DateTime(1970, 1, 1).AddSeconds(double.Parse(timestamp.ToString())).ToString("yyyy-MM-dd");
     }
+
+
+    //public void convertTo()
+    //{
+    //    Console.Writ;eLine(innerText.GetType());
+    //    switch (type)
+    //    {
+    //        case "checkbox":
+    //            value = bool.Parse(innerText.ToString());
+    //            break;
+    //        case "number":
+    //            value = int.Parse(innerText.ToString());
+    //            break;
+    //        case "date":
+    //            value = new DateTime(1970, 1, 1).AddSeconds(double.Parse(innerText.ToString())).ToString("yyyy-MM-dd");
+    //            break;
+    //        case "text":
+    //            value = innerText.ToString();
+    //            break;
+    //    }
+    //}
 
     public void dataChanged(string key, ChangeEventArgs e)
     {

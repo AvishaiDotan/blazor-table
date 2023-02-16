@@ -11,7 +11,7 @@
     }
 
     &.edited {
-        box-shadow: inset #1076c4 0px 0px 6px 1px;
+        box-shadow: inset $primary-edited 0px 0px 6px 1px;
     }
 
 
@@ -43,7 +43,7 @@
             }
         }
 
-        &[disabled] {  
+        &[disabled] {
             color: $clr-2;
         }
     }
@@ -69,11 +69,11 @@
             padding-block: 5px;
 
             &:hover {
-                background-color: #1283da4a;
+                background-color: $primary-hover;
             }
 
             &.selected {
-                background-color: #1283da4a;
+                background-color: $primary-hover;
             }
         }
     }
@@ -101,7 +101,7 @@
             gap: 5px;
 
             &:hover {
-                background-color: #1283da4a;
+                background-color: $primary-hover;
             }
         }
     }

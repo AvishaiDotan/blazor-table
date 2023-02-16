@@ -1,0 +1,22 @@
+﻿@if (action == "sort")
+{
+    <section class="sort-modal">
+        <header>
+            <span>Sort</span>
+            <AppSvgs type="@sortingOrder"></AppSvgs>
+        </header>
+        <section class="sort-options-list">
+        @foreach (string header in headers)
+        {
+            <span>@header</span>
+        }
+        </section>
+    </section>
+}
+
+@code {
+    [Parameter] public string action { get; set; }
+    [Parameter] public List<string> headers { get; set; }
+
+    string sortingOrder = "sort-up";
+}

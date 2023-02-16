@@ -7,13 +7,13 @@
         <AppSvgs type="@headerData.type" />
         @if (headerData.value.StartsWith("_"))
         {
-            <span></span>
+            <input disabled="@(!isEdited)" type="text" value="" @onchange='(ev) => dataChanged(ev)' @ref="inputElement">
             @*<input type="text" value="" @onchange='(ev) => dataChanged(ev)' @ref="inputElement">*@
         }
         else
         {
-            <span>@headerData.value</span>
-            @*<input type="text" value="@headerData.value" @onchange='(ev) => dataChanged(ev)' @ref="inputElement">*@
+            @*<span>@headerData.value</span>*@
+            <input disabled="@(!isEdited)"  type="text" value="@headerData.value" @onchange='(ev) => dataChanged(ev)' @ref="inputElement">
         }
 
     </div>
@@ -112,8 +112,8 @@
     {
         string thClass = "header-cell";
         if (isModalOpen) thClass += " selected";
-        else if (isFocused) thClass += " focused";
-        else if (isEdited) thClass += " edited";
+        if (isFocused) thClass += " focused";
+        if (isEdited) thClass += " edited";
 
         return thClass;
     }

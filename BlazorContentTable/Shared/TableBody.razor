@@ -9,9 +9,10 @@
                 var header = headers[columnIdx];
                 @if (row.ContainsKey(header))
                 {
-                    <TableCell innerText="@row[header]"
+                    <TableCell value="@row[header]"
                        rowIdx="rowIdx"
                        columnIdx="columnIdx"
+                       header="@header"
                        type="@headersData[columnIdx].type"
                        isModalOpen='isState("open", rowIdx, columnIdx)'
                        isFocused='isState("focused", rowIdx, columnIdx)'

@@ -2,6 +2,7 @@
 <PageTitle>Index</PageTitle>
 
 @inject HttpClient Http
+@using System.Linq
 
 @if (tableData == null)
 {
@@ -15,11 +16,9 @@ else
       @onclick="(ev) => clearAllSelections(true)"
       class="full">
         <AppHeader />
-        <TableActions applyRowAction='(type, rowIdx) => applyRowAction("add", 0)' />
+        <TableActions headers="GetHeaders()"  applyRowAction='(type, rowIdx) => applyRowAction("add", 0)' />
         <section class="table-wrapper">
             <table>
-                @if (tableData != null)
-                {
                     <TableHeader TableHeaderData="tableData.tableHeader"
                          HandleMouseDown="(which, idx, columnIdx) => HandleMouseDown(which, idx, columnIdx)"
                          addNewColumn="(columnIdx, type) => addNewColumn(columnIdx, type)"
@@ -37,8 +36,9 @@ else
                        HandleMouseDown="(which, idx, columnIdx) => HandleMouseDown(which, idx, columnIdx)"
                        applyRowAction="(type, rowIdx) => applyRowAction(type, rowIdx)"
                        onDataChanged="(header, rowIdx, data) => updateData(header, rowIdx, data)" />
-                }
+
             </table>
+            <button @onclick="printData">sadasd</button>
             <div class="height-filler">
             </div>
         </section>
@@ -60,6 +60,55 @@ else
     protected override async Task OnInitializedAsync()
     {
         tableData = await Http.GetFromJsonAsync<TableData>("sample-data/initalData.json");
+        string json =
+    "{" +
+    "  \"tableHeader\": [" +
+    "    {" +
+    "      \"type\": \"text\"," +
+    "      \"value\": \"Username\"," +
+    "      \"isDirectionModalOpen\": false" +
+    "    }," +
+    "    {" +
+    "      \"type\": \"checkbox\"," +
+    "      \"value\": \"Signed\"," +
+    "      \"isDirectionModalOpen\": false" +
+    "    }," +
+    "    {" +
+    "      \"type\": \"date\"," +
+    "      \"value\": \"Created\"," +
+    "      \"isDirectionModalOpen\": false" +
+    "    }," +
+    "    {" +
+    "      \"type\": \"number\"," +
+    "      \"value\": \"Age\"," +
+    "      \"isDirectionModalOpen\": false" +
+    "    }" +
+    "  ]," +
+    "  \"tableBody\": [" +
+    "    {" +
+    "      \"id\": 1," +
+    "      \"Username\": \"Avi Cohen\"," +
+    "      \"Signed\": true," +
+    "      \"Created\": \"2018-07-22\"," +
+    "      \"Age\": 0" +
+    "    }," +
+    "    {" +
+    "      \"id\": 2," +
+    "      \"Username\": \"Sarah Levi\"," +
+    "      \"Signed\": false," +
+    "      \"Created\": \"2020-03-15\"," +
+    "      \"Age\": 28" +
+    "    }," +
+    "    {" +
+    "      \"id\": 3," +
+    "      \"Username\": \"David Mizrachi\"," +
+    "      \"Signed\": false," +
+    "      \"Created\": \"2021-12-31\"," +
+    "      \"Age\": 40" +
+    "    }" +
+    "  ]" +
+    "}";
+        tableData = JsonConvert.DeserializeObject<TableData>(json);
 
         cellWithOpenModal = (-1, -1);
         focusedCell = editedCell = cellWithOpenModal;
@@ -78,18 +127,23 @@ else
     private void HandleKeyDown(KeyboardEventArgs e)
     {
 
-        if (e.ShiftKey && e.Key == "Enter")
-        {
-            addNewRow(0);
-            return;
-        }
-
         int headerRow = -100;
         int firstBodyRow = 0;
         int columnCount = GetHeaders().Count - 1;
         int rowCount = tableData.tableBody.Count - 1;
         bool isFocused = (focusedCell.columnIdx != -1 && focusedCell.rowIdx != -1);
         bool isEditing = (editedCell.rowIdx == focusedCell.rowIdx && editedCell.columnIdx == focusedCell.columnIdx);
+
+        if (e.ShiftKey && e.Key == "Enter")
+        {
+            addNewRow(0);
+            return;
+        }
+        if (e.Key == "Escape")
+        {
+            cellWithOpenModal = editedCell = focusedCell = (-1, -1);
+            return;
+        }
 
 
         if (isFocused && !isEditing)
@@ -149,14 +203,13 @@ else
     {
         _clickCount++;
 
-
         if (_clickCount == 1)
         {
-            
+
             await Task.Delay(500);
             if (_clickCount == 1)
             {
-                
+
             }
             _clickCount = 0;
         }
@@ -181,6 +234,7 @@ else
     public void clearAllSelections(bool doUpdate)
     {
         cellWithOpenModal = (-1, -1);
+
         if (doUpdate) StateHasChanged();
 
     }
@@ -188,10 +242,6 @@ else
     public void addNewColumn(int columnIdx, string type)
     {
         clearAllSelections(true);
-
-
-        Console.WriteLine(columnIdx);
-        Console.WriteLine(type);
 
         Random rand = new Random();
         int randomNumber = rand.Next();
@@ -272,9 +322,104 @@ else
 
     public void updateData(string header, int idx, dynamic data)
     {
-        if (header == "header") tableData.tableHeader[idx].value = data;
-        else tableData.tableBody[idx][header] = data;
+
+        if (header == "header") {
+
+            string prevPropName = tableData.tableHeader[idx].value;
+            tableData.tableHeader[idx].value = data;
+
+            foreach (var row in tableData.tableBody)
+            {
+                dynamic prevPropValue = row[prevPropName];
+                row.Remove(prevPropName);
+                row.Add(data, prevPropValue);
+            }
+        }
+        else {
+            tableData.tableBody[idx][header] = data;
+
+        }
+        Console.WriteLine(System.Text.Json.JsonSerializer.Serialize(tableData.tableBody));
+        Console.WriteLine(System.Text.Json.JsonSerializer.Serialize(tableData.tableBody[idx]));
+        Console.WriteLine(System.Text.Json.JsonSerializer.Serialize(tableData.tableBody[idx][header]));
+
+        tableData.tableBody = tableData.tableBody;
+        //Console.WriteLine(System.Text.Json.JsonSerializer.Serialize(tableData.tableBody));
         StateHasChanged();
+    }
+
+    //public List<Dictionary<string, dynamic>> SortData(string key, bool isDesc)
+    //{
+    //    //System.Text.Json.JsonElement value = tableData.tableBody[0][key];
+    //    //var type = value.ValueKind.ToString();
+
+    //    dynamic value = tableData.tableBody[0][key];
+    //    Console.WriteLine(System.Text.Json.JsonSerializer.Serialize(value));
+
+    //    Type type = value.GetType();
+    //    string typeStr = type.ToString();
+
+    //    Console.WriteLine(type);
+    //    List<Dictionary<string, dynamic>> sortedList;
+
+    //    switch (typeStr)
+    //    {
+    //        case "Number":
+    //            sortedList = tableData.tableBody.OrderBy(x => x[key].GetDouble()).ToList();
+    //            break;
+    //        case "String":
+    //            sortedList = tableData.tableBody.OrderBy(x => x[key].GetString()).ToList();
+    //            break;
+    //        case "True":
+    //        case "False":
+    //            sortedList = tableData.tableBody.OrderBy(x => x[key].GetBoolean()).ToList();
+    //            break;
+    //        default:
+    //            throw new Exception("Unexpected type: " + type);
+    //    }
+
+    //    if (isDesc)
+    //    {
+    //        sortedList.Reverse();
+    //    }
+
+    //    return sortedList;
+    //}
+
+    public List<Dictionary<string, dynamic>> SortData(string key, bool isDesc)
+    {
+
+        dynamic value = tableData.tableBody[0][key];
+        Type type = value.GetType();
+
+        List<Dictionary<string, dynamic>> sortedList;
+
+        switch (type.Name)
+        {
+            case "Number":
+                sortedList = tableData.tableBody.OrderBy(x => x[key]).ToList();
+                break;
+            case "String":
+                sortedList = tableData.tableBody.OrderBy(x => x[key]).ToList();
+                break;
+            case "Boolean":
+                sortedList = tableData.tableBody.OrderBy(x => x[key]).ToList();
+                break;
+            default:
+                throw new Exception("Unexpected type: " + type);
+        }
+
+        if (isDesc)
+        {
+            sortedList.Reverse();
+        }
+
+        return sortedList;
+    }
+
+    public void printData()
+    {
+        tableData.tableBody = SortData("Signed", false);
     }
 }
 }

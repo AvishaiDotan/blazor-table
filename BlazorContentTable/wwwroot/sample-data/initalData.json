@@ -26,21 +26,21 @@
       "id": 1,
       "Username": "Avi Cohen",
       "Signed": true,
-      "Created": 1611158400,
+      "Created": "2018-07-22",
       "Age": 0
     },
     {
       "id": 2,
       "Username": "Sarah Levi",
       "Signed": false,
-      "Created": 784870400,
+      "Created": "2020-03-15",
       "Age": 28
     },
     {
       "id": 3,
       "Username": "David Mizrachi",
-      "Signed": true,
-      "Created": 915148800,
+      "Signed": false,
+      "Created": "2021-12-31",
       "Age": 40
     }
   ]

@@ -1,0 +1,23 @@
+﻿<section class="@(isFilterModalOpen ? "open filter-modal" : "filter-modal")">
+    <header>
+        <span>Filter</span>
+    </header>
+
+
+    <section class="filter-options-list">
+        <span>Search</span>
+        <input type="search" @onchange="(ChangeEventArgs ev) => setFilterBy(ev.Value as string)" />
+    </section>
+
+</section>
+
+@code {
+
+    [Parameter] public List<string> headers { get; set; }
+    [Parameter] public List<string> types { get; set; }
+
+    [Parameter] public bool isFilterModalOpen { get; set; }
+
+    [Parameter] public Action<string> setFilterBy { get; set; }
+
+}

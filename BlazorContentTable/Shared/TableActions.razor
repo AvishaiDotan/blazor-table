@@ -1,13 +1,22 @@
 ﻿<header class="table-actions full">
     <span>
-        <AppSvgs type="filter" />
-        Filter
-        
+        <div @onclick='() => toggleModal("filter")'>
+            <AppSvgs type="filter" />
+            Filter
+        </div>
+
+        <FilterModal headers="headers"
+                     types="types"
+                     setFilterBy="(string filterBy) => setFilterBy.Invoke(filterBy)"
+                     isFilterModalOpen="isFilterModalOpen" />
+
     </span>
-    <span>
+    <span @onclick='() => toggleModal("sort")'>
         <AppSvgs type="sort" />
         Sort
-        <SortModal action="sort" headers="headers" />
+        <SortModal headers="headers"
+                   setSort="(sortBy, isDesc) => setSort.Invoke(sortBy, isDesc)"
+                   isSortModalOpen="isSortModalOpen" />
     </span>
     <span @onclick='() => applyRowAction.Invoke("add", 0)'>
         <AppSvgs type="plus" />
@@ -17,7 +26,22 @@
 </header>
 
 @code {
+
     [Parameter] public Action<string, int> applyRowAction { get; set; }
+    [Parameter] public Action<string, bool> setSort { get; set; }
+    [Parameter] public Action<string> setFilterBy { get; set; }
 
     [Parameter] public List<string> headers { get; set; }
+    [Parameter] public List<string> types { get; set; }
+
+
+    public bool isSortModalOpen = false;
+    public bool isFilterModalOpen = false;
+
+    public void toggleModal(string type)
+    {
+        if (type == "sort") isSortModalOpen = !isSortModalOpen;
+        else isFilterModalOpen = !isFilterModalOpen;
+    }
+
 }

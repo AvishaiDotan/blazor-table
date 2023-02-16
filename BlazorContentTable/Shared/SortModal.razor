@@ -1,22 +1,43 @@
-﻿@if (action == "sort")
-{
-    <section class="sort-modal">
+﻿    <section class="@(isSortModalOpen ? "open sort-modal" : "sort-modal")">
         <header>
             <span>Sort</span>
-            <AppSvgs type="@sortingOrder"></AppSvgs>
+            <span @onclick="onSetIsDesc">
+                  <AppSvgs type="@sortingOrder"></AppSvgs>
+            </span>
+           
         </header>
         <section class="sort-options-list">
         @foreach (string header in headers)
         {
-            <span>@header</span>
+            <span @onclick="() => onSetSortBy(header)">@header</span>
         }
         </section>
     </section>
-}
+
 
 @code {
-    [Parameter] public string action { get; set; }
+    [Parameter] public Action<string, bool> setSort { get; set; }
+
     [Parameter] public List<string> headers { get; set; }
+    [Parameter] public bool isSortModalOpen { get; set; }
+
+    private string sortBy = "";
+    private bool isDesc = false;
 
     string sortingOrder = "sort-up";
+
+    public void onSetSortBy(string newSortBy)
+    {
+        sortBy = newSortBy;
+        setSort.Invoke(sortBy, isDesc);
+    }
+
+    public void onSetIsDesc()
+    {
+        isDesc = !isDesc;
+
+        sortingOrder = (isDesc) ? "sort-down" : "sort-up";
+
+        setSort.Invoke(sortBy, isDesc);
+    }
 }

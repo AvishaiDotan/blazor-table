@@ -16,10 +16,15 @@ else
       @onclick="(ev) => clearAllSelections(true)"
       class="full">
         <AppHeader />
-        <TableActions headers="GetHeaders()"  applyRowAction='(type, rowIdx) => applyRowAction("add", 0)' />
+        <TableActions headers="GetHeaders()"
+                  types="getTypes()"
+                  applyRowAction='(type, rowIdx) => applyRowAction("add", 0)'
+                  setSort="(sortBy, isDesc) => setSort(sortBy, isDesc)"
+                  setFilterBy="(string filterBy) => setFilterBy(filterBy)" />
+
         <section class="table-wrapper">
             <table>
-                    <TableHeader TableHeaderData="tableData.tableHeader"
+                <TableHeader TableHeaderData="tableData.tableHeader"
                          HandleMouseDown="(which, idx, columnIdx) => HandleMouseDown(which, idx, columnIdx)"
                          addNewColumn="(columnIdx, type) => addNewColumn(columnIdx, type)"
                          onDataChanged="(header, columnIdx, data) => updateData(header, columnIdx, data)"
@@ -27,7 +32,7 @@ else
                          focusedCell="focusedCell"
                          editedCell="editedCell" />
 
-                    <TableBody TableBodyData="tableData.tableBody"
+                <TableBody TableBodyData="getFilteredList()"
                        headersData="tableData.tableHeader"
                        headers="GetHeaders()"
                        cellWithOpenModal="cellWithOpenModal"
@@ -38,7 +43,6 @@ else
                        onDataChanged="(header, rowIdx, data) => updateData(header, rowIdx, data)" />
 
             </table>
-            <button @onclick="printData">sadasd</button>
             <div class="height-filler">
             </div>
         </section>
@@ -49,71 +53,27 @@ else
 
     @code {
 
+
     static TableData tableData;
     private (int rowIdx, int columnIdx) cellWithOpenModal;
     private (int rowIdx, int columnIdx) focusedCell;
     private (int rowIdx, int columnIdx) editedCell;
+    public (string sortBy, bool isDesc) sortProps;
+    public string filterBy = "";
 
     private ElementReference mainRef { get; set; }
 
 
     protected override async Task OnInitializedAsync()
     {
-        tableData = await Http.GetFromJsonAsync<TableData>("sample-data/initalData.json");
-        string json =
-    "{" +
-    "  \"tableHeader\": [" +
-    "    {" +
-    "      \"type\": \"text\"," +
-    "      \"value\": \"Username\"," +
-    "      \"isDirectionModalOpen\": false" +
-    "    }," +
-    "    {" +
-    "      \"type\": \"checkbox\"," +
-    "      \"value\": \"Signed\"," +
-    "      \"isDirectionModalOpen\": false" +
-    "    }," +
-    "    {" +
-    "      \"type\": \"date\"," +
-    "      \"value\": \"Created\"," +
-    "      \"isDirectionModalOpen\": false" +
-    "    }," +
-    "    {" +
-    "      \"type\": \"number\"," +
-    "      \"value\": \"Age\"," +
-    "      \"isDirectionModalOpen\": false" +
-    "    }" +
-    "  ]," +
-    "  \"tableBody\": [" +
-    "    {" +
-    "      \"id\": 1," +
-    "      \"Username\": \"Avi Cohen\"," +
-    "      \"Signed\": true," +
-    "      \"Created\": \"2018-07-22\"," +
-    "      \"Age\": 0" +
-    "    }," +
-    "    {" +
-    "      \"id\": 2," +
-    "      \"Username\": \"Sarah Levi\"," +
-    "      \"Signed\": false," +
-    "      \"Created\": \"2020-03-15\"," +
-    "      \"Age\": 28" +
-    "    }," +
-    "    {" +
-    "      \"id\": 3," +
-    "      \"Username\": \"David Mizrachi\"," +
-    "      \"Signed\": false," +
-    "      \"Created\": \"2021-12-31\"," +
-    "      \"Age\": 40" +
-    "    }" +
-    "  ]" +
-    "}";
-        tableData = JsonConvert.DeserializeObject<TableData>(json);
+
+        string tableDataStr = await Http.GetStringAsync("sample-data/initData.json");
+
+        tableData = JsonConvert.DeserializeObject<TableData>(tableDataStr);
 
         cellWithOpenModal = (-1, -1);
         focusedCell = editedCell = cellWithOpenModal;
-        //Console.WriteLine(JsonConvert.SerializeObject(tableData, Formatting.Indented));
-        //Console.WriteLine(System.Text.Json.JsonSerializer.Serialize(tableData));
+        sortProps = ("", false);
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -231,6 +191,17 @@ else
         return result;
     }
 
+    public List<string> getTypes()
+    {
+        List<string> result = new List<string>();
+
+        foreach (TableHeaderClass header in tableData.tableHeader)
+        {
+            result.Add(header.type);
+        }
+        return result;
+    }
+
     public void clearAllSelections(bool doUpdate)
     {
         cellWithOpenModal = (-1, -1);
@@ -323,7 +294,8 @@ else
     public void updateData(string header, int idx, dynamic data)
     {
 
-        if (header == "header") {
+        if (header == "header")
+        {
 
             string prevPropName = tableData.tableHeader[idx].value;
             tableData.tableHeader[idx].value = data;
@@ -335,91 +307,74 @@ else
                 row.Add(data, prevPropValue);
             }
         }
-        else {
+        else
+        {
             tableData.tableBody[idx][header] = data;
 
         }
-        Console.WriteLine(System.Text.Json.JsonSerializer.Serialize(tableData.tableBody));
-        Console.WriteLine(System.Text.Json.JsonSerializer.Serialize(tableData.tableBody[idx]));
-        Console.WriteLine(System.Text.Json.JsonSerializer.Serialize(tableData.tableBody[idx][header]));
-
-        tableData.tableBody = tableData.tableBody;
-        //Console.WriteLine(System.Text.Json.JsonSerializer.Serialize(tableData.tableBody));
         StateHasChanged();
     }
 
-    //public List<Dictionary<string, dynamic>> SortData(string key, bool isDesc)
-    //{
-    //    //System.Text.Json.JsonElement value = tableData.tableBody[0][key];
-    //    //var type = value.ValueKind.ToString();
-
-    //    dynamic value = tableData.tableBody[0][key];
-    //    Console.WriteLine(System.Text.Json.JsonSerializer.Serialize(value));
-
-    //    Type type = value.GetType();
-    //    string typeStr = type.ToString();
-
-    //    Console.WriteLine(type);
-    //    List<Dictionary<string, dynamic>> sortedList;
-
-    //    switch (typeStr)
-    //    {
-    //        case "Number":
-    //            sortedList = tableData.tableBody.OrderBy(x => x[key].GetDouble()).ToList();
-    //            break;
-    //        case "String":
-    //            sortedList = tableData.tableBody.OrderBy(x => x[key].GetString()).ToList();
-    //            break;
-    //        case "True":
-    //        case "False":
-    //            sortedList = tableData.tableBody.OrderBy(x => x[key].GetBoolean()).ToList();
-    //            break;
-    //        default:
-    //            throw new Exception("Unexpected type: " + type);
-    //    }
-
-    //    if (isDesc)
-    //    {
-    //        sortedList.Reverse();
-    //    }
-
-    //    return sortedList;
-    //}
-
-    public List<Dictionary<string, dynamic>> SortData(string key, bool isDesc)
+    public void setSort(string sortBy, bool isDesc)
     {
+        sortProps = (sortBy, isDesc);
+        SortData();
+    }
+
+    public void SortData()
+    {
+        string key = sortProps.sortBy;
+        bool isDesc = sortProps.isDesc;
 
         dynamic value = tableData.tableBody[0][key];
+
         Type type = value.GetType();
+
 
         List<Dictionary<string, dynamic>> sortedList;
 
-        switch (type.Name)
+        if (type == typeof(int) || type == typeof(long) || type == typeof(double) || type == typeof(float)) sortedList = tableData.tableBody.OrderBy(x => x[key]).ToList();
+        else
         {
-            case "Number":
-                sortedList = tableData.tableBody.OrderBy(x => x[key]).ToList();
-                break;
-            case "String":
-                sortedList = tableData.tableBody.OrderBy(x => x[key]).ToList();
-                break;
-            case "Boolean":
-                sortedList = tableData.tableBody.OrderBy(x => x[key]).ToList();
-                break;
-            default:
-                throw new Exception("Unexpected type: " + type);
+            switch (type.Name)
+            {
+                case "Number":
+                case "Int":
+                case "Long":
+                    sortedList = tableData.tableBody.OrderBy(x => x[key]).ToList();
+                    break;
+                case "String":
+                    sortedList = tableData.tableBody.OrderBy(x => x[key]).ToList();
+                    break;
+                case "Boolean":
+                    sortedList = tableData.tableBody.OrderBy(x => x[key]).ToList();
+                    break;
+                default:
+                    throw new Exception("Unexpected type: " + type);
+            }
         }
+
 
         if (isDesc)
         {
             sortedList.Reverse();
         }
 
-        return sortedList;
+        tableData.tableBody = sortedList;
     }
 
-    public void printData()
+    public void setFilterBy(string filterValue)
     {
-        tableData.tableBody = SortData("Signed", false);
+        filterBy = filterValue;
+    }
+
+    public List<Dictionary<string, dynamic>> getFilteredList()
+    {
+        var filteredList = tableData.tableBody
+            .Where(dict => dict.Values
+            .Any(val => val != null && val.ToString().IndexOf(filterBy, StringComparison.OrdinalIgnoreCase) >= 0))
+            .ToList();
+        return filteredList;
     }
 }
 }

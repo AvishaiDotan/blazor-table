@@ -32,7 +32,7 @@ jobs:
       - name: Commit wwwroot to GitHub Pages
         uses: JamesIves/github-pages-deploy-action@3.7.1
         with:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: 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
           BRANCH: gh-pages
           FOLDER: dist/Web/wwwroot
           

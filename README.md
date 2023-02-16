@@ -2,6 +2,7 @@
 
 This is a Blazor component that displays a table and allows users to interact with it, including adding and deleting columns and records, editing cells, sorting and filtering the table, and more.
 
+![Index (1) (1) (1)](https://user-images.githubusercontent.com/108017307/219502034-64f58a23-817e-476f-aaa7-891e73367de8.gif)
 
 
 ## Features

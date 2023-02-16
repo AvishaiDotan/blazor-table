@@ -106,27 +106,6 @@
         return new DateTime(1970, 1, 1).AddSeconds(double.Parse(timestamp.ToString())).ToString("yyyy-MM-dd");
     }
 
-
-    //public void convertTo()
-    //{
-    //    Console.Writ;eLine(innerText.GetType());
-    //    switch (type)
-    //    {
-    //        case "checkbox":
-    //            value = bool.Parse(innerText.ToString());
-    //            break;
-    //        case "number":
-    //            value = int.Parse(innerText.ToString());
-    //            break;
-    //        case "date":
-    //            value = new DateTime(1970, 1, 1).AddSeconds(double.Parse(innerText.ToString())).ToString("yyyy-MM-dd");
-    //            break;
-    //        case "text":
-    //            value = innerText.ToString();
-    //            break;
-    //    }
-    //}
-
     public void dataChanged(string key, ChangeEventArgs e)
     {
         onDataChanged.Invoke(key, rowIdx, e.Value);

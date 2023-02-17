@@ -1,7 +1,8 @@
 ﻿@import '../setup/mixin.scss';
 @import '../setup/variables.scss';
 .table-wrapper {
-    height: calc(100vh - 136px);
+    max-height: calc(100vh - 136px);
+    overflow-y: auto;
     display: flex;
     flex-direction: column;
 

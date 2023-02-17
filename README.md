@@ -18,7 +18,6 @@ table, the user can either click on the "+" button located at the end of the tab
 
 To add a new record to the table, the user can either click the "Add record" button located above the table, click the "+" button at the end of the table, or right-click on a record and choose "Add record below". Alternatively, the user can press the "Shift" and "Enter" keys on the keyboard.
 
-![Index (1) (1) (1)](https://user-images.githubusercontent.com/108017307/219501950-2f3090ad-5e89-4d33-bb1d-5c01b58e104b.gif)
 
 ### Editing Cells
 
@@ -45,3 +44,7 @@ To filter the table, the user can click on the filter icon located next to a col
 ## Infrastructure
 
 This component is built using Blazor WASM and LINQ. The UI is styled using SCSS, which is compiled to CSS during the build process.
+
+## Example
+
+![Index (1) (1) (1)](https://user-images.githubusercontent.com/108017307/219501950-2f3090ad-5e89-4d33-bb1d-5c01b58e104b.gif)
